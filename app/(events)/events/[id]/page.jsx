@@ -12,6 +12,7 @@ import EventDetails from '@/components/events/EventDetails'
 
 import FooterOne from '@/components/layout/footers/FooterOne'
 import Header from '@/components/layout/headers/Header'
+import HeaderFour from '@/components/layout/headers/HeaderFour'
 import React from 'react'
 export const metadata = {
   title: 'Event-details || Educrat - Professional LMS Online Education Course NextJS Template',
@@ -25,9 +26,9 @@ export default async function page(props) {
     <div className="main-content  ">
       <Preloader/>
 
-        <Header/>
+        <HeaderFour/>
         <div className="content-wrapper js-content-wrapper overflow-hidden">
-            <PageLinks/>
+            {/* <PageLinks/> */}
 
             <EventDetails id={params.id} />
        

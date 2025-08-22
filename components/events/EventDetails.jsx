@@ -1,395 +1,197 @@
 "use client";
 
-import Image from "next/image";
+import React, { useEffect, useState } from "react";
+import { fetchActualite } from "@/services/actualiteService";
 
-import React from "react";
-import { events, learnList, eventContent } from "@/data/events";
-import Socials from "../common/Socials";
-import { instractorsNine } from "@/data/instractors";
-import Star from "../common/Star";
-import Link from "next/link";
-import { useContextElement } from "@/context/Context";
+const TYPE_LABELS = {
+  academique: "Événements académiques",
+  administratif: "Annonces administratives",
+  recherche: "Recherche",
+  "vie-etudiante": "Vie étudiante",
+  appel: "Appel à candidatures",
+  autre: "Actualité",
+};
+
 export default function EventDetails({ id }) {
-  const {         addEventToCart,
-    isAddedToCartEvents } = useContextElement();
-  const data = events.filter((elm) => elm.id == id)[0] || events[0];
-  const handleSubmit = (e) => {
-    e.preventDefault();
-  };
+  const [doc, setDoc] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let on = true;
+    (async () => {
+      try {
+        const data = await fetchActualite(id);
+        if (on) setDoc(data);
+      } catch (e) {
+        console.error("Failed to load actualité:", e);
+        if (on) setDoc(null);
+      } finally {
+        if (on) setLoading(false);
+      }
+    })();
+    return () => {
+      on = false;
+    };
+  }, [id]);
+
+  const resolveDate = (d) =>
+    d?.displayDate || d?.event?.startAt || d?.publishedAt || d?.createdAt;
+
+  const dateStr =
+    doc && resolveDate(doc)
+      ? new Date(resolveDate(doc)).toLocaleDateString("fr-FR", {
+          day: "2-digit",
+          month: "long",
+          year: "numeric",
+        })
+      : "";
+
+  const typeLabel = doc?.type ? TYPE_LABELS[doc.type] || "Actualité" : null;
+
   return (
     <>
-      <section className="page-header -type-2">
-        <div className="page-header__bg">
-          <div
-            className="bg-image js-lazy"
-            style={{ backgroundImage: `url(${data.imgSrc})` }}
-            data-bg=""
-          ></div>
-        </div>
-
+      {/* HERO */}
+      <section className="layout-pt-lg">
         <div className="container">
-          <div className="page-header__content">
-            <div className="row">
-              <div className="col-xl-5 col-lg-6">
-                <div className="page-header__info d-flex items-center">
-                  <div className="d-flex items-center text-white mr-15">
-                    <div className="icon icon-calendar-2"></div>
-                    <div className="text-14 ml-8">{data.date}</div>
-                  </div>
+          <div className="heroCard">
+            {typeLabel && (
+              <span className="badge bg-blue-1 text-white heroPill">
+                {typeLabel}
+              </span>
+            )}
 
-                  <div className="d-flex items-center text-white mr-15">
-                    <div className="icon icon-location"></div>
-                    <div className="text-14 ml-8">{data.location}</div>
-                  </div>
-                </div>
+            <h1 className="heroTitle">
+              {loading ? "Chargement…" : doc?.title}
+            </h1>
 
-                <div>
-                  <h1 className="page-header__title text-white mt-20">
-                    {data.desc}
-                  </h1>
-                </div>
+            <div className="heroMeta">
+              <span className="metaItem">
+                <i className="icon icon-calendar-2" />
+                <span>{loading ? "…" : dateStr}</span>
+              </span>
 
-                <div>
-                  <div className="d-flex x-gap-50 pt-12">
-                    <div className="text-white">
-                      <div className="text-40 lh-12 fw-700">20</div>
-                      <div className="text-15">Days</div>
-                    </div>
+              {doc?.author?.name && (
+                <>
+                  <span className="dot" />
+                  <span className="metaItem">
+                    <i className="icon icon-user" />
+                    <span>
+                      Par {doc.author.name}
+                      {doc.author.role ? ` — ${doc.author.role}` : ""}
+                    </span>
+                  </span>
+                </>
+              )}
 
-                    <div className="text-white">
-                      <div className="text-40 lh-12 fw-700">32</div>
-                      <div className="text-15">Hours</div>
-                    </div>
-
-                    <div className="text-white">
-                      <div className="text-40 lh-12 fw-700">57</div>
-                      <div className="text-15">Minutes</div>
-                    </div>
-
-                    <div className="text-white">
-                      <div className="text-40 lh-12 fw-700">13</div>
-                      <div className="text-15">Seconds</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              {doc?.kind === "evenement" && doc?.event?.location && (
+                <>
+                  <span className="dot" />
+                  <span className="metaItem">
+                    <i className="icon icon-location" />
+                    <span>{doc.event.location}</span>
+                  </span>
+                </>
+              )}
             </div>
           </div>
+
+          {/* SUBTITLE CALLOUT */}
+          {doc?.subtitle && (
+            <div className="callout">
+              <p className="calloutText">{doc.subtitle}</p>
+            </div>
+          )}
         </div>
       </section>
 
-      <section className="pt-50 layout-pb-lg">
+      {/* CONTENT */}
+      <section className="layout-pb-lg">
         <div className="container">
-          <div className="row y-gap-50">
-            <div className="col-xl-8 col-lg-8 lg:order-2">
-              <h4 className="text-20">About The Event</h4>
-              <p className="text-light-1 mt-30">
-                Phasellus enim magna, varius et commodo ut, ultricies vitae
-                velit. Ut nulla tellus, eleifend euismod pellentesque vel,
-                sagittis vel justo. In libero urna, venenatis sit amet ornare
-                non, suscipit nec risus. Sed consequat justo non mauris pretium
-                at tempor justo sodales. Quisque tincidunt laoreet malesuada.
-                Cum sociis natoque penatibus et magnis dis parturient montes,
-                nascetur.
-                <br />
-                <br />
-                This course is aimed at people interested in UI/UX Design. We’ll
-                start from the very beginning and work all the way through, step
-                by step. If you already have some UI/UX Design experience but
-                want to get up to speed using Adobe XD then this course is
-                perfect for you too!
-                <br />
-                <br />
-                First, we will go over the differences between UX and UI Design.
-                We will look at what our brief for this real-world project is,
-                then we will learn about low-fidelity wireframes and how to make
-                use of existing UI design kits.
-              </p>
-              <button className="button underline text-purple-1 mt-30">
-                Show More
-              </button>
-
-              <div className="mt-60">
-                <h4 className="text-20 mb-30">What you'll learn</h4>
-                <div className="row x-gap-100 justfiy-between">
-                  <div className="col-md-6">
-                    <div className="y-gap-20">
-                      {learnList.slice(0, 6).map((elm, i) => (
-                        <div key={i} className="d-flex items-center">
-                          <div className="d-flex justify-center items-center border-light rounded-full size-20 mr-10">
-                            <i className="icon-check text-6"></i>
-                          </div>
-                          <p>{elm}</p>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="col-md-6">
-                    <div className="y-gap-20">
-                      {learnList.slice(6, -1).map((elm, i) => (
-                        <div key={i} className="d-flex items-center">
-                          <div className="d-flex justify-center items-center border-light rounded-full size-20 mr-10">
-                            <i className="icon-check text-6"></i>
-                          </div>
-                          <p>{elm}</p>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="mt-60">
-                <h4 className="text-20">Event Content</h4>
-                <ul className="ul-list y-gap-15 pt-30">
-                  {eventContent.map((elm, i) => (
-                    <li key={i}>{elm}</li>
-                  ))}
-                </ul>
-              </div>
-
-              <div className="mt-60">
-                <h4 className="text-20 mb-30">Our Speakers</h4>
-                <div className="row y-gap-30">
-                  {instractorsNine.slice(0, 4).map((elm, i) => (
-                    <div className="col-lg-3 col-md-6">
-                      <div className="text-center">
-                        <Image
-                          width={180}
-                          height={180}
-                          src={elm.image}
-                          alt="image"
-                        />
-                        <h5 className="text-17 fw-500 mt-20">
-                          <Link
-                            className="linkCustom"
-                            href={`/instructors/${elm.id}`}
-                          >
-                            {elm.name}
-                          </Link>
-                        </h5>
-                        <p className="">{elm.role}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="blogPost -comments mt-60">
-                <div className="blogPost__content">
-                  <h2 className="text-20 fw-500">Reviews</h2>
-
-                  <ul className="comments__list mt-30">
-                    <li className="comments__item">
-                      <div className="comments__item-inner md:direction-column">
-                        <div className="comments__img mr-20">
-                          <div
-                            className="bg-image rounded-full js-lazy"
-                            style={{
-                              backgroundImage: "url(/assets/img/avatars/1.png)",
-                            }}
-                            data-bg="/assets/img/avatars/1.png"
-                          ></div>
-                        </div>
-
-                        <div className="comments__body md:mt-15">
-                          <div className="comments__header">
-                            <h4 className="text-17 fw-500 lh-15">
-                              Ali Tufan
-                              <span className="text-13 text-light-1 fw-400">
-                                3 Days ago
-                              </span>
-                            </h4>
-
-                            <div className="stars"></div>
-                          </div>
-
-                          <h5 className="text-15 fw-500 mt-15">
-                            The best LMS Design
-                          </h5>
-                          <div className="comments__text mt-10">
-                            <p>
-                              This course is a very applicable. Professor Ng
-                              explains precisely each algorithm and even tries
-                              to give an intuition for mathematical and
-                              statistic concepts behind each algorithm. Thank
-                              you very much.
-                            </p>
-                          </div>
-
-                          <div className="comments__helpful mt-20">
-                            <span className="text-13 text-purple-1">
-                              Was this review helpful?
-                            </span>
-                            <button className="button text-13 -sm -purple-1 text-white">
-                              Yes
-                            </button>
-                            <button className="button text-13 -sm -light-7 text-purple-1">
-                              No
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    </li>
-
-                    <li className="comments__item">
-                      <div className="comments__item-inner md:direction-column">
-                        <div className="comments__img mr-20">
-                          <div
-                            className="bg-image rounded-full js-lazy"
-                            style={{
-                              backgroundImage: "url(/assets/img/avatars/1.png)",
-                            }}
-                            data-bg="/assets/img/avatars/1.png"
-                          ></div>
-                        </div>
-
-                        <div className="comments__body md:mt-15">
-                          <div className="comments__header">
-                            <h4 className="text-17 fw-500 lh-15">
-                              Ali Tufan
-                              <span className="text-13 text-light-1 fw-400">
-                                3 Days ago
-                              </span>
-                            </h4>
-
-                            <div className="stars"></div>
-                          </div>
-
-                          <h5 className="text-15 fw-500 mt-15">
-                            The best LMS Design
-                          </h5>
-                          <div className="comments__text mt-10">
-                            <p>
-                              This course is a very applicable. Professor Ng
-                              explains precisely each algorithm and even tries
-                              to give an intuition for mathematical and
-                              statistic concepts behind each algorithm. Thank
-                              you very much.
-                            </p>
-                          </div>
-
-                          <div className="comments__helpful mt-20">
-                            <span className="text-13 text-purple-1">
-                              Was this review helpful?
-                            </span>
-                            <button className="button text-13 -sm -purple-1 text-white">
-                              Yes
-                            </button>
-                            <button className="button text-13 -sm -light-7 text-purple-1">
-                              No
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-
-              <div className="respondForm mt-60">
-                <h3 className="text-20 fw-500">Write a Review</h3>
-
-                <div className="mt-30">
-                  <h4 className="text-16 fw-500">What is it like to Course?</h4>
-                  <div className="d-flex x-gap-10 pt-10">
-                    <Star textSize={"text-14"} star={5} />
-                  </div>
-                </div>
-
-                <form
-                  className="contact-form respondForm__form row y-gap-30 pt-30"
-                  onSubmit={handleSubmit}
-                >
-                  <div className="col-12">
-                    <label className="text-16 lh-1 fw-500 text-dark-1 mb-10">
-                      Review Title
-                    </label>
-                    <input
-                      required
-                      type="text"
-                      name="title"
-                      placeholder="Great Courses"
-                    />
-                  </div>
-                  <div className="col-12">
-                    <label className="text-16 lh-1 fw-500 text-dark-1 mb-10">
-                      Review Content
-                    </label>
-                    <textarea
-                      required
-                      name="comment"
-                      placeholder="Message"
-                      rows="8"
-                    ></textarea>
-                  </div>
-                  <Link href={"/login"} className="col-12">
-                    <button
-                      type="submit"
-                      name="submit"
-                      id="submit"
-                      className="button -md -purple-1 text-white"
-                    >
-                      Submit Review
-                    </button>
-                  </Link>
-                </form>
-              </div>
-            </div>
-
-            <div className="col-xl-4 col-lg-4 lg:order-1">
-              <div className="event-info bg-white rounded-8 px-30 py-30 border-light shadow-1">
-                <div className="d-flex justify-between items-center">
-                  <div className="text-24 lh-1 fw-500 text-dark-1">$96.00</div>
-
-                  <div className="d-flex items-center">
-                    <div className="text-light-1 line-through mr-10">
-                      $76.00
-                    </div>
-                    <div className="text-14 fw-500 text-dark-1 px-15 py-5 bg-green-1 rounded-4">
-                      91% off
-                    </div>
-                  </div>
-                </div>
-
-                <div className="d-flex justify-between mt-30 pb-10">
-                  <div className="d-flex items-center text-dark-1">
-                    <div className="icon-location"></div>
-                    <div className="ml-10">Total Slot</div>
-                  </div>
-                  <div>587</div>
-                </div>
-
-                <div className="d-flex justify-between pt-10 border-top-light">
-                  <div className="d-flex items-center text-dark-1">
-                    <div className="icon-location"></div>
-                    <div className="ml-10">Booked Slot</div>
-                  </div>
-                  <div>987</div>
-                </div>
-
+          <div className="row y-gap-40">
+            <div className="col-xl-9 col-lg-10">
+              {loading ? (
+                <p className="text-light-1">Chargement…</p>
+              ) : (
                 <div
-                 onClick={() => addEventToCart(data.id)}
-                  className="button -md col-12 -purple-1 text-white mt-30 cursor"
-                >
-                  {isAddedToCartEvents(data.id)
-                ? "Booked"
-                : "Book Now"}
-                </div>
-
-                <div className="d-flex justify-center pt-25">
-                  <Socials
-                    componentsClass={
-                      "d-flex justify-center items-center size-50 rounded-full"
-                    }
-                  />
-                </div>
-              </div>
+                  className="content-style"
+                  // Assurez-vous de nettoyer/truster le HTML côté admin
+                  dangerouslySetInnerHTML={{ __html: doc?.content || "" }}
+                />
+              )}
             </div>
           </div>
         </div>
       </section>
+
+      {/* scoped styles */}
+      <style jsx>{`
+        .heroCard {
+          background: linear-gradient(135deg, #eaf2ff 0%, #f3f0ff 100%);
+          border: 1px solid rgba(0, 0, 0, 0.06);
+          border-radius: 16px;
+          padding: 28px 24px 26px;
+          box-shadow: 0 10px 30px rgba(24, 39, 75, 0.05);
+        }
+        .heroPill {
+          display: inline-block;
+          padding: 6px 12px;
+          border-radius: 999px;
+          font-size: 13px;
+          font-weight: 600;
+        }
+        .heroTitle {
+          margin-top: 14px;
+          margin-bottom: 8px;
+          line-height: 1.2;
+          font-weight: 800;
+          /* big blue title */
+          color: var(--blue-1, #2563eb);
+          font-size: clamp(28px, 4.6vw, 52px);
+          letter-spacing: -0.02em;
+        }
+        .heroMeta {
+          display: flex;
+          align-items: center;
+          flex-wrap: wrap;
+          gap: 8px 14px;
+          color: #0f172a; /* dark */
+          font-size: 14px;
+          margin-top: 8px;
+        }
+        .metaItem {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          line-height: 1;
+        }
+        .metaItem i {
+          font-size: 16px;
+        }
+        .dot {
+          width: 4px;
+          height: 4px;
+          border-radius: 999px;
+          background: rgba(0, 0, 0, 0.25);
+          display: inline-block;
+        }
+        .callout {
+          margin-top: 18px;
+          background: #f3f7ff;
+          border-radius: 10px;
+          padding: 18px 18px;
+          border-left: 4px solid var(--blue-1, #2563eb);
+        }
+        .calloutText {
+          margin: 0;
+          font-size: 16px;
+          color: #334155;
+        }
+        @media (max-width: 576px) {
+          .heroCard {
+            padding: 22px 16px 18px;
+          }
+        }
+      `}</style>
     </>
   );
 }

@@ -36,17 +36,18 @@ export default function page() {
     </div>
      <div className="content-wrapper  js-content-wrapper overflow-hidden">
         <HeroFour/>
-        <Brands/>
-        <CategoriesFour/>
+        <EventsFour/>
+
+        {/* <Brands/> */}
+        {/* <CategoriesFour/> */}
         <CoursesFour/>
         <LearningPath/>
-        <FeaturedCourses/>
+        {/* <FeaturedCourses/>
         <LandJob/>
         <TestimonialsFour/>
         <AchievementsTwo/>
         <InstractorFour/>
-        <EventsFour/>
-        <LearningSelection/>
+        <LearningSelection/> */}
         <FooterFour/>
 
      </div>
