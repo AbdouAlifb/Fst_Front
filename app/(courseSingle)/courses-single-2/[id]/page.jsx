@@ -11,6 +11,7 @@ import CourseSlider from '@/components/courseSingle/CourseSlider'
 import FooterOne from '@/components/layout/footers/FooterOne'
 
 import Header from '@/components/layout/headers/Header'
+import HeaderFour from '@/components/layout/headers/HeaderFour'
 import React from 'react'
 
 
@@ -26,11 +27,10 @@ export default async function page(props) {
   return (
     <div  className="main-content  ">
       <Preloader/>
-        <Header/>
+        <HeaderFour/>
         <div  className="content-wrapper  js-content-wrapper ">
-            <PageLinks dark={true} />
             <CourseDetailsTwo id={params.id} />
-            <CourseSlider/>
+
             <FooterOne/>
         </div>
 
