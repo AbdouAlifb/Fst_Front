@@ -1,570 +1,564 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { fetchFiliere } from "@/services/filiereService";
-
-/**
- * CourseDetailsTwo — polished JSX version
- * - Sticky in-page nav with active section
- * - Hero with built-in gradient overlay (no global overlay bug)
- * - Compact chips, clean cards, hover effects
- * - Program year cards with dot accent
- * - Documents as clickable rows
- * - Sticky right info panel with optional brochure CTA
- * - Skeletons during load
- */
+import {
+  FaClock,
+  FaLayerGroup,
+  FaBullseye,
+  FaCheckCircle,
+  FaArrowRight,
+  FaBook,
+  FaFilePdf,
+  FaUser
+} from "react-icons/fa";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || "";
 
-const SECTIONS = [
-  { id: "overview", label: "Aperçu" },
-  { id: "course-content", label: "Programme" },
-  { id: "instructors", label: "Coordinateur" },
-  { id: "documents", label: "Documents" },
+const TABS = [
+  { key: "objectifs", label: "Objectifs", icon: <FaCheckCircle /> },
+  { key: "debouches", label: "Débouchés", icon: <FaArrowRight /> },
+  { key: "poursuites", label: "Poursuites", icon: <FaCheckCircle /> },
+  { key: "programme", label: "Programme", icon: <FaBook /> },
 ];
 
-function resolveUrl(u) {
-  if (!u) return "";
-  return u.startsWith("http") ? u : `${API_BASE}${u}`;
-}
-
-export default function CourseDetailsTwo({ id }) {
+export default function CourseDetails({ id }) {
   const [doc, setDoc] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [activeId, setActiveId] = useState(SECTIONS[0].id);
-  const observerRef = useRef(null);
+  const [activeTab, setActiveTab] = useState("objectifs");
 
-  // Load filière
   useEffect(() => {
     let alive = true;
     (async () => {
       try {
-        const data = await fetchFiliere(id); // accepts slug or id
+        const data = await fetchFiliere(id);
         if (alive) setDoc(data);
       } catch (e) {
-        console.error("[CourseDetailsTwo] load failed:", e);
-        if (alive) setDoc(null);
+        console.error(e);
       } finally {
         if (alive) setLoading(false);
       }
     })();
-    return () => {
-      alive = false;
-    };
+    return () => { alive = false; };
   }, [id]);
 
-  // Observe sections for active nav highlight
-  useEffect(() => {
-    const opts = {
-      rootMargin: "-120px 0px -65% 0px",
-      threshold: [0, 0.2, 0.4, 0.6],
-    };
-    observerRef.current = new IntersectionObserver((entries) => {
-      const topMost = entries
-        .filter((e) => e.isIntersecting)
-        .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-      if (topMost && topMost.target && topMost.target.id)
-        setActiveId(topMost.target.id);
-    }, opts);
+  const resolveUrl = (u) => (u?.startsWith("http") ? u : `${API_BASE}${u}`);
+  const nbModules = doc?.nbModules ?? doc?.programme?.reduce((acc, year) => acc + (year.items?.length || 0), 0);
 
-    SECTIONS.forEach(({ id }) => {
-      const el = document.getElementById(id);
-      if (el) observerRef.current.observe(el);
-    });
-    return () => observerRef.current && observerRef.current.disconnect();
-  }, [loading]);
-
-  const hero = useMemo(() => {
-    const u =
-      (doc && doc.heroImage && doc.heroImage.url) ||
-      (doc && doc.cardImage && doc.cardImage.url);
-    return u ? resolveUrl(u) : null;
-  }, [doc]);
-
-  const isNew = useMemo(() => {
-    if (!doc || !doc.createdAt) return false;
-    const days = (Date.now() - new Date(doc.createdAt).getTime()) / 86400000;
-    return days < 60;
-  }, [doc]);
 
   return (
-    <div id="js-pin-container" className="js-pin-container relative">
-      {/* ====== HEADER ====== */}
-      <section
-        className="page-header -type-5 bg-dark-1"
-        style={{ position: "relative" }}
-      >
-        <div className="page-header__bg">
-          <div
-            className="bg-image js-lazy"
-            style={
-              hero
-                ? {
-                    backgroundImage: `linear-gradient(180deg, rgba(12,12,24,.55) 0%, rgba(12,12,24,.70) 60%, rgba(12,12,24,.80) 100%), url(${hero})`,
-                  }
-                : { background: "linear-gradient(140deg,#1b1f3b,#6541f5)" }
-            }
-          />
-        </div>
+      <div className="course-page">
+        {/* HEADER */}
+        <header className="header">
+          {/* Effets lumineux en arrière-plan */}
+          <div className="header-bg">
+            <div className="circle circle1"></div>
+            <div className="circle circle2"></div>
+          </div>
 
-        <div className="container">
-          <div
-            className="page-header__content pt-90 pb-90"
-            style={{ position: "relative", zIndex: 1 }}
-          >
-            <div className="row y-gap-30 relative">
-              <div className="col-xl-9 col-lg-10">
-                {/* badges */}
-                <div className="d-flex x-gap-15 y-gap-10 pb-16">
-                  {doc && doc.degreeLevel ? (
-                    <span className="badge px-15 py-8 text-11 bg-purple-1 text-white fw-400">
-                      {String(doc.degreeLevel).replace("-", " ").toUpperCase()}
-                    </span>
-                  ) : null}
-                  {isNew ? (
-                    <span className="badge px-15 py-8 text-11 bg-orange-1 text-white fw-400">
-                      NOUVEAU
-                    </span>
-                  ) : null}
-                  {doc && doc.isFeatured ? (
-                    <span className="badge px-15 py-8 text-11 bg-green-1 text-dark-1 fw-400">
-                      MISE EN AVANT
-                    </span>
-                  ) : null}
-                </div>
+          <div className="header-inner">
+            <h1 className="title animate-fade">{doc?.title || "Chargement…"}</h1>
+            <p className="subtitle animate-fade">{doc?.subtitle}</p>
 
-                <h1 className="text-30 lh-14 text-white pr-60 lg:pr-0">
-                  {loading ? "Chargement…" : (doc && doc.title) || "Filière"}
-                </h1>
+            <div className="header-cards">
+              {doc && (
+                  <>
+                    {doc.formation?.title && (
+                        <div className="header-card">
+                          <FaBullseye className="card-icon big-icon" />
+                          <div className="card-value">{doc.formation.title}</div>
+                          <div className="card-label">Formation</div>
+                        </div>
+                    )}
+                    {doc.durationYears && (
+                        <div className="header-card">
+                          <FaClock className="card-icon big-icon" />
+                          <div className="card-value">{doc.durationYears} ans</div>
+                          <div className="card-label">Durée</div>
+                        </div>
+                    )}
+                    {doc.semesters && (
+                        <div className="header-card">
+                          <FaLayerGroup className="card-icon big-icon" />
+                          <div className="card-value">{doc.semesters}</div>
+                          <div className="card-label">Semestres</div>
+                        </div>
+                    )}
+                    {nbModules > 0 && (
+                        <div className="header-card">
+                          <FaBook className="card-icon big-icon" />
+                          <div className="card-value">{nbModules}</div>
+                          <div className="card-label">Modules</div>
+                        </div>
+                    )}
 
-                {doc && doc.subtitle ? (
-                  <p className="col-xl-9 mt-16 text-white opacity-90">
-                    {doc.subtitle}
-                  </p>
-                ) : null}
-
-                {/* chips */}
-                {!loading ? (
-                  <div className="d-flex x-gap-25 y-gap-10 items-center flex-wrap pt-18">
-                    {doc && doc.durationYears ? (
-                      <Chip icon="icon-wall-clock">
-                        Durée {doc.durationYears} ans
-                      </Chip>
-                    ) : null}
-                    {doc && doc.semesters ? (
-                      <Chip icon="icon-book-open">
-                        {doc.semesters} semestres
-                      </Chip>
-                    ) : null}
-                    {doc && doc.creditsECTS ? (
-                      <Chip icon="icon-layers">{doc.creditsECTS} ECTS</Chip>
-                    ) : null}
-                    {doc &&
-                    Array.isArray(doc.departments) &&
-                    doc.departments.length > 0 ? (
-                      <Chip icon="icon-academic-cap">
-                        {doc.departments.join(", ")}
-                      </Chip>
-                    ) : null}
-                  </div>
-                ) : null}
-
-                {/* back to formation */}
-                {doc && doc.formation && doc.formation.title ? (
-                  <div className="d-flex items-center pt-18">
-                    <Link
-                      className="button -sm -white text-dark-1"
-                      href={`/courses-list-4?formation=${encodeURIComponent(
-                        doc.formation.slug || doc.formation._id
-                      )}`}
-                    >
-                      ← Retour : {doc.formation.title}
-                    </Link>
-                  </div>
-                ) : null}
-
-                {/* Optional CTA in hero if brochure exists */}
-                {doc && doc.brochure && doc.brochure.url ? (
-                  <div className="d-flex items-center pt-12">
-                    <a
-                      className="button -sm -purple-1"
-                      href={resolveUrl(doc.brochure.url)}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      Télécharger la brochure
-                    </a>
-                  </div>
-                ) : null}
-              </div>
+                  </>
+              )}
             </div>
           </div>
-        </div>
+        </header>
 
-        {/* sticky in-page nav */}
-        <div
-          className="border-top-light"
-          style={{
-            position: "sticky",
-            top: 0,
-            zIndex: 50,
-            backdropFilter: "blur(6px)",
-            background: "rgba(12,12,24,0.72)",
-          }}
-        >
-          <div className="container">
-            <nav className="cd-subnav d-flex x-gap-30 overflow-auto no-scrollbar py-12">
-              {SECTIONS.map((s) => (
-                <a
-                  key={s.id}
-                  href={`#${s.id}`}
-                  className={`pb-12 page-nav-menu__link ${
-                    activeId === s.id ? "is-active" : ""
-                  }`}
-                >
-                  {s.label}
-                </a>
+        {/* MAIN CONTENT */}
+        <div className="main-layout">
+          <div className="content">
+            <div className="tabs">
+              {TABS.map((tab) => (
+                  <button
+                      key={tab.key}
+                      className={`tab-btn ${activeTab === tab.key ? "active" : ""}`}
+                      onClick={() => setActiveTab(tab.key)}
+                  >
+                    <span className="tab-icon">{tab.icon}</span> {tab.label}
+                  </button>
               ))}
-            </nav>
-          </div>
-        </div>
-      </section>
+            </div>
 
-      {/* ====== CONTENT ====== */}
-      <section className="layout-pt-md layout-pb-md">
-        <div className="container">
-          <div className="row">
-            {/* Main column */}
-            <div className="col-lg-8">
-              {/* ===== Overview ===== */}
-              <div id="overview" className="mt-30">
-                <h3 className="text-20">Aperçu</h3>
-                <div className="text-light-1 mt-20 content-style">
-                  {loading ? (
-                    <Skeleton lines={4} />
-                  ) : doc && doc.overview ? (
-                    <div dangerouslySetInnerHTML={{ __html: doc.overview }} />
-                  ) : (
-                    <p>À venir.</p>
-                  )}
-                </div>
-
-                {/* Objectifs / Débouchés / Poursuites */}
-                <div className="row y-gap-30 mt-30">
-                  {doc &&
-                  Array.isArray(doc.objectifs) &&
-                  doc.objectifs.length > 0 ? (
-                    <div className="col-md-6">
-                      <Card title="Objectifs" className="cd-card">
-                        <ul className="ul-list y-gap-8">
-                          {doc.objectifs.map((t, i) => (
-                            <li key={i}>{t}</li>
-                          ))}
-                        </ul>
-                      </Card>
-                    </div>
-                  ) : null}
-                  {doc &&
-                  Array.isArray(doc.debouches) &&
-                  doc.debouches.length > 0 ? (
-                    <div className="col-md-6">
-                      <Card title="Débouchés" className="cd-card">
-                        <ul className="ul-list y-gap-8">
-                          {doc.debouches.map((t, i) => (
-                            <li key={i}>{t}</li>
-                          ))}
-                        </ul>
-                      </Card>
-                    </div>
-                  ) : null}
-                  {doc &&
-                  Array.isArray(doc.poursuites) &&
-                  doc.poursuites.length > 0 ? (
-                    <div className="col-12">
-                      <Card title="Poursuites d’études" className="cd-card">
-                        <ul className="ul-list y-gap-8">
-                          {doc.poursuites.map((t, i) => (
-                            <li key={i}>{t}</li>
-                          ))}
-                        </ul>
-                      </Card>
-                    </div>
-                  ) : null}
-                </div>
-              </div>
-
-              {/* ===== Programme ===== */}
-              <div id="course-content" className="mt-60">
-                <h3 className="text-20">Programme</h3>
-                <p className="text-light-1 mt-10">
-                  Parcours détaillé{" "}
-                  {doc && doc.durationYears ? `sur ${doc.durationYears} ans` : ""}
-                  .
-                </p>
-
-                <div className="row x-gap-20 y-gap-20 pt-20">
-                  {(doc && doc.programme ? doc.programme : []).map(
-                    (year, idx) => (
-                      <div className="col-md-4" key={idx}>
-                        <div className="cd-year rounded-8 border-light bg-white shadow-1 py-20 px-20">
-                          <div className="text-15 fw-700 mb-12 d-flex items-center">
-                            <span className="dot size-20 rounded-full mr-10" />
-                            {(year && year.label) || `Année ${idx + 1}`}
-                          </div>
-                          <ul className="ul-list y-gap-8">
-                            {(year && year.items ? year.items : []).map(
-                              (m, i) => (
-                                <li key={i}>{m}</li>
-                              )
-                            )}
-                          </ul>
-                        </div>
-                      </div>
-                    )
-                  )}
-                </div>
-              </div>
-
-              {/* ===== Coordinateur ===== */}
-              <div id="instructors" className="mt-60">
-                <h3 className="text-20">Coordinateur</h3>
-                {doc && doc.coordinator ? (
-                  <div className="row y-gap-20 pt-20">
-                    <div className="col-12">
-                      <div className="d-flex items-start x-gap-15 rounded-8 border-light bg-white shadow-1 p-20">
-                        <div className="icon icon-person-3 text-30 text-purple-1" />
-                        <div>
-                          <div className="text-16 fw-700">
-                            {doc.coordinator.name || "-"}
-                          </div>
-                          <div className="text-14 text-light-1">
-                            {doc.coordinator.role || ""}
-                          </div>
-                          {doc.coordinator.email ? (
-                            <div className="text-14 mt-5">
-                              {doc.coordinator.email}
-                            </div>
-                          ) : null}
-                          {doc.coordinator.phone ? (
-                            <div className="text-14 mt-5">
-                              {doc.coordinator.phone}
-                            </div>
-                          ) : null}
-                          {doc.coordinator.office ? (
-                            <div className="text-14 mt-5">
-                              {doc.coordinator.office}
-                            </div>
-                          ) : null}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  <p className="text-light-1 mt-10">Non renseigné.</p>
-                )}
-              </div>
-
-              {/* ===== Documents ===== */}
-              <div id="documents" className="mt-60">
-                <h3 className="text-20">Documents à télécharger</h3>
-                {doc && Array.isArray(doc.documents) && doc.documents.length > 0 ? (
-                  <div className="row y-gap-12 pt-15">
-                    {doc.documents.map((d, i) => (
-                      <div key={i} className="col-md-6">
-                        <a
-                          className="cd-doc d-flex items-center x-gap-12 rounded-8 border-light bg-white shadow-1 py-14 px-16"
-                          href={resolveUrl(d.url)}
-                          target="_blank"
-                          rel="noreferrer"
-                        >
-                          <span className="icon icon-file-2 text-18 text-purple-1" />
-                          <div>
-                            <div className="text-14 fw-600">
-                              {d.label || "Document"}
-                            </div>
-                            <div className="text-12 text-light-1">
-                              {d.type ? `${d.type}` : "PDF"}
-                            </div>
-                          </div>
-                        </a>
-                      </div>
+            <div className="tab-content">
+              {/* Objectifs */}
+              {!loading && activeTab === "objectifs" && (
+                  <div className="cards-vertical">
+                    {doc.objectifs?.map((o, i) => (
+                        <div key={i} className="center-card">{o}</div>
                     ))}
                   </div>
-                ) : (
-                  <p className="text-light-1 mt-10">Aucun document disponible.</p>
-                )}
-              </div>
-            </div>
+              )}
 
-            {/* Right column */}
-            <div className="col-lg-4">
-              <div
-                className="cd-card cd-sticky rounded-8 border-light bg-white shadow-1 p-20"
-                style={{ top: 96 }}
-              >
-                <h4 className="text-18 mb-10">Infos rapides</h4>
-                <ul className="ul-list y-gap-8">
-                  {doc && doc.formation && doc.formation.title ? (
+
+              {/* Debouches */}
+              {!loading && activeTab === "debouches" && (
+                  <div className="cards-vertical">
+                    {doc.debouches?.map((d, i) => (
+                        <div key={i} className="center-card">{d}</div>
+                    ))}
+                  </div>
+              )}
+
+              {/* Poursuites */}
+              {!loading && activeTab === "poursuites" && (
+                  <div className="cards-vertical">
+                    {doc.poursuites?.map((p, i) => (
+                        <div key={i} className="center-card">{p}</div>
+                    ))}
+                  </div>
+              )}
+
+
+              {!loading && activeTab === "programme" && (
+                  <div className="cards-vertical">
+                    {doc.programme?.map((year, i) => (
+                        <div key={i} className="programme-item">
+                          <div className="programme-year">{year.label}</div>
+                          <div className="programme-details">
+                            <ul>
+                              {year.items?.map((item, j) => <li key={j}>{item}</li>)}
+                            </ul>
+                          </div>
+                        </div>
+                    ))}
+                  </div>
+              )}
+            </div>
+          </div>
+
+          {/* RIGHT SIDEBAR */}
+          <aside className="sidebar">
+            {/* Infos rapides */}
+            <div className="card friendly-card">
+              <h3>
+                <FaCheckCircle style={{ marginRight: "0.5rem" }} />
+                Infos rapides
+              </h3>
+              <ul>
+                {doc?.formation?.title && (
                     <li>
-                      Formation:{" "}
-                      <Link
-                        href={`/courses-list-4?formation=${encodeURIComponent(
-                          doc.formation.slug || doc.formation._id
-                        )}`}
-                        className="linkCustom"
-                      >
-                        {doc.formation.title}
+                      <span className="field-label">Formation:</span>
+                      <Link href={`/courses-list-4?formation=${doc.formation.slug || doc.formation._id}`}>
+                        <span className="field-value">{doc.formation.title}</span>
                       </Link>
                     </li>
-                  ) : null}
-                  {doc && doc.status ? (
+                )}
+                {doc?.status && (
                     <li>
-                      Statut:{" "}
-                      {doc.status === "published"
-                        ? "Publié"
-                        : doc.status === "draft"
-                        ? "Brouillon"
-                        : "Archivé"}
+                      <span className="field-label">Statut:</span>
+                      <span className="field-value">{doc.status}</span>
                     </li>
-                  ) : null}
-                  {doc && doc.updatedAt ? (
+                )}
+                {doc?.updatedAt && (
                     <li>
-                      MAJ: {new Date(doc.updatedAt).toLocaleDateString("fr-FR")}
+                      <span className="field-label">MAJ:</span>
+                      <span className="field-value">{new Date(doc.updatedAt).toLocaleDateString("fr-FR")}</span>
                     </li>
-                  ) : null}
-                  {doc && doc.brochure && doc.brochure.url ? (
-                    <li className="pt-8">
-                      <a
-                        className="button -md -purple-1 w-100"
-                        href={resolveUrl(doc.brochure.url)}
-                        target="_blank"
-                        rel="noreferrer"
-                      >
+                )}
+                {doc?.brochure?.url && (
+                    <li>
+                      <FaFilePdf style={{ marginRight: "0.3rem" }} />
+                      <a href={resolveUrl(doc.brochure.url)} target="_blank" rel="noreferrer">
                         Télécharger la brochure
                       </a>
                     </li>
-                  ) : null}
-                </ul>
-              </div>
+                )}
+              </ul>
             </div>
-          </div>
+
+            {/* Coordinateur */}
+            {doc?.coordinator && (
+                <div className="card friendly-card">
+                  <h3>
+                    <FaUser style={{ marginRight: "0.5rem" }} />
+                    Coordinateur
+                  </h3>
+                  <div className="field-row">
+                    <span className="field-label">Nom:</span>
+                    <span className="field-value">{doc.coordinator.name}</span>
+                    <span className="field-label">Métier:</span>
+                    <span className="field-value">{doc.coordinator.role}</span>
+                  </div>
+                  <div className="field-row">
+                    <span className="field-label">Email:</span>
+                    <span className="field-value">{doc.coordinator.email}</span>
+                    <span className="field-label">Téléphone:</span>
+                    <span className="field-value">{doc.coordinator.phone}</span>
+                  </div>
+                  <div className="field-row">
+                    <span className="field-label">Bureau:</span>
+                    <span className="field-value">{doc.coordinator.office}</span>
+                  </div>
+                </div>
+            )}
+
+            {/* Documents */}
+            {doc?.documents?.length > 0 && (
+                <div className="card friendly-card">
+                  <h3>
+                    <FaFilePdf style={{ marginRight: "0.5rem" }} />
+                    Documents
+                  </h3>
+                  <ul>
+                    {doc.documents.map((d, i) => (
+                        <li key={i}>
+                          <a href={resolveUrl(d.url)} target="_blank" rel="noreferrer">
+                            {d.label} ({d.type || "PDF"})
+                          </a>
+                        </li>
+                    ))}
+                  </ul>
+                </div>
+            )}
+          </aside>
         </div>
-      </section>
 
-      {/* Scoped visual polish */}
-      <style jsx>{`
-        /* Cards */
-        .cd-card {
-          border-radius: 12px;
-          border: 1px solid rgba(16, 24, 40, 0.06);
-          box-shadow: 0 10px 30px rgba(2, 6, 23, 0.06);
-          background: #fff;
-        }
-        .cd-sticky {
-          position: sticky;
-        }
+        <style jsx>{`
+          /* HEADER */
+          .header {
+            position: relative;
+            background: linear-gradient(135deg, #16213E, #1a1a80, #0001ff);
+            color: #fff;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 3rem 2rem;
+            border-radius: 0 0 40px 40px;
+            overflow: hidden;
+          }
 
-        /* Chips (on hero) */
-        .cd-chip {
-          background: rgba(255, 255, 255, 0.12);
-          border: 1px solid rgba(255, 255, 255, 0.22);
-          color: #fff;
-          backdrop-filter: blur(6px);
-        }
-        .cd-chip :global(i.icon) {
-          opacity: 0.9;
-        }
+          /* Effets lumineux animés */
+          .header-bg .circle {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: 0.6;
+            animation: float 10s infinite ease-in-out alternate;
+          }
 
-        /* Programme years */
-        .cd-year {
-          transition: box-shadow 0.2s ease, transform 0.2s ease;
-        }
-        .cd-year:hover {
-          box-shadow: 0 12px 34px rgba(2, 6, 23, 0.1);
-          transform: translateY(-2px);
-        }
-        .cd-year .dot {
-          background: radial-gradient(
-            closest-side,
-            #7b5cff 0%,
-            #c4b5fd 70%,
-            transparent 71%
-          );
-          opacity: 0.85;
-        }
+          .circle1 {
+            width: 400px;
+            height: 400px;
+            top: -100px;
+            left: -100px;
+            background: #4f46e5;
+          }
 
-        /* Documents rows */
-        .cd-doc {
-          transition: background 0.15s ease, box-shadow 0.15s ease;
-        }
-        .cd-doc:hover {
-          background: #f8fafc;
-          box-shadow: 0 8px 20px rgba(2, 6, 23, 0.06);
-        }
+          .circle2 {
+            width: 500px;
+            height: 500px;
+            bottom: -150px;
+            right: -100px;
+            background: #3b82f6;
+          }
 
-        /* Sub-nav active state underline + subtle border */
-        .cd-subnav {
-          border-bottom: 1px solid rgba(16, 24, 40, 0.08);
-        }
-        :global(.page-nav-menu__link.is-active) {
-          color: #0f172a !important;
-          font-weight: 600;
-          position: relative;
-        }
-        :global(.page-nav-menu__link.is-active)::after {
-          content: "";
-          position: absolute;
-          left: 0;
-          right: 0;
-          bottom: -1px;
-          height: 3px;
-          border-radius: 3px;
-          background: linear-gradient(90deg, #7b5cff, #3b82f6);
-        }
+          @keyframes float {
+            from {
+              transform: translateY(0px);
+            }
+            to {
+              transform: translateY(-40px);
+            }
+          }
 
-        /* Lists inside cards */
-        :global(.ul-list) li {
-          color: #0f172a;
-        }
-        :global(.ul-list) li + li {
-          margin-top: 6px;
-        }
+          /* Titre + sous-titre */
+          .title {
+            padding-top: 3rem;
+            font-size: 4rem;
+            font-weight: 900;
+            margin-bottom: 1rem;
+            background: linear-gradient(90deg, #ff7e5f, #feb47b, #d52d5a, #8e0202);
+            background-size: 100% 300%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: gradientMove 6s ease infinite;
+            text-shadow: none; /* tu peux laisser si tu veux plus de glow */
+          }
 
-        /* Section headings spacing */
-        :global(h3.text-20) {
-          margin-bottom: 6px;
-        }
-      `}</style>
-    </div>
-  );
-}
+          @keyframes gradientMove {
+            0% {
+              background-position: 0% 50%;
+            }
+            50% {
+              background-position: 100% 50%;
+            }
+            100% {
+              background-position: 0% 50%;
+            }
+          }
 
-/* ---------- UI bits ---------- */
-function Chip({ icon, children }) {
-  return (
-    <span className="cd-chip d-inline-flex items-center x-gap-8 rounded-200 px-12 py-8 text-12">
-      {icon ? <i className={`icon ${icon} text-13`} /> : null}
-      {children}
-    </span>
-  );
-}
 
-function Card({ title, children, className = "" }) {
-  return (
-    <div className={`rounded-8 border-light bg-white shadow-1 p-20 ${className}`}>
-      {title ? <div className="text-16 fw-700 mb-12">{title}</div> : null}
-      {children}
-    </div>
-  );
-}
+          .subtitle {
+            font-size: 1.5rem;
+            margin-bottom: 3rem;
+            opacity: 0.9;
+          }
 
-function Skeleton({ lines = 3 }) {
-  return (
-    <div className="y-gap-10">
-      {Array.from({ length: lines }).map((_, i) => (
-        <div key={i} className="bg-light-4" style={{ height: 12, borderRadius: 6 }} />
-      ))}
-    </div>
+          /* Animation d’apparition */
+          .animate-fade {
+            animation: fadeInUp 1s ease both;
+          }
+
+          @keyframes fadeInUp {
+            from {
+              opacity: 0;
+              transform: translateY(30px);
+            }
+            to {
+              opacity: 1;
+              transform: translateY(0);
+            }
+          }
+
+          /* Cards en glassmorphism */
+          .header-cards {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+          }
+
+          .header-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+            width: 180px;
+            height: 180px;
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* centre horizontalement */
+            justify-content: center; /* centre verticalement */
+            text-align: center; /* centre le texte multiline */
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+          }
+
+          .header-card:hover {
+            transform: translateY(-8px) scale(1.05);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+          }
+
+          .card-icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+          }
+
+          .card-icon.big-icon {
+            font-size: 3rem;
+          }
+
+          .card-value {
+            font-size: 1.3rem;
+            font-weight: 700;
+          }
+
+          .card-label {
+            font-size: 1rem;
+            opacity: 0.85;
+          }
+
+
+          /* LAYOUT PRINCIPAL */
+          .main-layout {
+            display: flex;
+            gap: 2rem;
+            margin-top: 2rem;
+            padding: 2rem 3rem 3rem 3rem;
+          }
+
+          .content {
+            flex: 2;
+          }
+
+          .sidebar {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+          }
+
+          /* TABS */
+          .tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            width: 100%;
+          }
+
+          .tab-btn {
+            flex: 1;
+            padding: 1rem 0;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            background: #f5f5f5;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+          }
+
+          .tab-btn.active {
+            background: #0001ff;
+            color: white;
+            border-color: #266ff3;
+          }
+
+          .tab-icon {
+            display: flex;
+            align-items: center;
+          }
+
+          /* CARDS OBJECTIFS / DEBOUCHES / POURSUITES */
+          .cards-vertical {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+          }
+
+          .center-card {
+            background: #f5f8ff;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            border-left: 5px solid #266ff3;
+            text-align: center;
+            font-weight: 600;
+            font-size: 1rem;
+            color: #000157;
+            transition: transform 0.3s, box-shadow 0.3s;
+          }
+
+          .center-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+          }
+
+          /* CARDS PROGRAMME */
+          .programme-item {
+            display: flex;
+            gap: 2rem;
+            background: #f5f8ff;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            border-left: 5px solid #266ff3;
+            align-items: flex-start;
+            transition: transform 0.3s, box-shadow 0.3s;
+          }
+
+          .programme-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+          }
+
+          .programme-year {
+            flex: 0 0 120px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: #000157;
+          }
+
+          .programme-details {
+            flex: 1;
+          }
+
+          .programme-details ul {
+            padding-left: 1rem;
+            margin: 0;
+          }
+
+          .programme-details li {
+            margin-bottom: 0.3rem;
+            font-size: 1rem;
+          }
+
+          /* SIDEBAR */
+          .friendly-card {
+            background: #f0f4ff;
+            padding: 1.5rem;
+            border-radius: 16px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+          }
+
+          .friendly-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+          }
+
+          .friendly-card h3 {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+          }
+
+          .field-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem 2rem;
+            margin-bottom: 0.5rem;
+          }
+
+          .field-label {
+            font-weight: 600;
+            color: #333;
+          }
+
+          .field-value {
+            font-weight: 500;
+            color: #555;
+          }
+
+          /* Sidebar liste classique */
+          .sidebar ul li {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.3rem 0;
+            font-size: 0.95rem;
+          }
+        `}</style>
+      </div>
   );
 }
