@@ -27,7 +27,7 @@ export default function FooterOne() {
             <div className="col-auto">
               <div className="footer-header-socials">
                 <div className="footer-header-socials__title text-white">
-                  Follow us on social media
+                  Suivez Nous sur les reseaux sociaux:
                 </div>
                 <div className="footer-header-socials__list">
                   <Socials />
@@ -44,19 +44,40 @@ export default function FooterOne() {
             />
 
             <div className="col-xl-4 col-lg-4 col-md-6">
-              <div className="text-17 fw-500 text-white uppercase mb-25">
-                GET IN TOUCH
-              </div>
-              <div className="footer-columns-form">
-                <div>We don’t send spam so don’t worry.</div>
-                <form onSubmit={handleSubmit}>
-                  <div className="form-group">
-                    <input required type="text" placeholder="Email..." />
-                    <button type="submit">Submit</button>
-                  </div>
-                </form>
-              </div>
-            </div>
+  <div className="text-17 fw-500 text-white uppercase mb-25">
+    CONTACT
+  </div>
+
+  <div className="footer-columns-form">
+    <address className="mb-0" style={{ color: "#fff" }}>
+      <div>
+        Boulevard Abdelkrim Khattabi,<br />
+        BP 549, 40000 Marrakech
+      </div>
+
+      <div style={{ marginTop: 12 }}>
+        <strong>Téléphone:&nbsp;</strong>
+        <a
+          href="tel:+212524434649"
+          style={{ color: "#fff", textDecoration: "underline" }}
+        >
+          +212 524 43 46 49
+        </a>
+      </div>
+
+      <div style={{ marginTop: 8 }}>
+        <strong>Email:&nbsp;</strong>
+        <a
+          href="mailto:contact@fstg-marrakech.ac.ma"
+          style={{ color: "#fff", textDecoration: "underline" }}
+        >
+          contact@fstg-marrakech.ac.ma
+        </a>
+      </div>
+    </address>
+  </div>
+</div>
+
           </div>
         </div>
 
@@ -64,7 +85,7 @@ export default function FooterOne() {
           <div className="row justify-between items-center y-gap-20">
             <div className="col-auto">
               <div className="d-flex items-center h-100 text-white">
-                © {new Date().getFullYear()} Educrat. All Right Reserved.
+                © {new Date().getFullYear()} FST Marrakech. Tous droits réservés.
               </div>
             </div>
 

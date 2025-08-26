@@ -6,24 +6,26 @@ import { fetchFiliere } from "@/services/filiereService";
 import {
   FaClock,
   FaLayerGroup,
+  FaGraduationCap,
+  FaTh,
   FaBullseye,
-  FaCheckCircle,
-  FaArrowRight,
-  FaBook,
+  FaBriefcase,
   FaFilePdf,
-  FaUser
+  FaArrowRight,
+  FaUser,
+  FaInfoCircle,
 } from "react-icons/fa";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || "";
 
 const TABS = [
-  { key: "objectifs", label: "Objectifs", icon: <FaCheckCircle /> },
-  { key: "debouches", label: "Débouchés", icon: <FaArrowRight /> },
-  { key: "poursuites", label: "Poursuites", icon: <FaCheckCircle /> },
-  { key: "programme", label: "Programme", icon: <FaBook /> },
+  { key: "objectifs", label: "Objectifs" },
+  { key: "debouches", label: "Débouchés" },
+  { key: "poursuites", label: "Poursuites" },
+  { key: "programme", label: "Programme" },
 ];
 
-export default function CourseDetails({ id }) {
+export default function CourseDetailsTwo({ id }) {
   const [doc, setDoc] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("objectifs");
@@ -40,525 +42,349 @@ export default function CourseDetails({ id }) {
         if (alive) setLoading(false);
       }
     })();
-    return () => { alive = false; };
+    return () => {
+      alive = false;
+    };
   }, [id]);
 
-  const resolveUrl = (u) => (u?.startsWith("http") ? u : `${API_BASE}${u}`);
-  const nbModules = doc?.nbModules ?? doc?.programme?.reduce((acc, year) => acc + (year.items?.length || 0), 0);
+  const resolveUrl = (u) => (u && u.startsWith("http") ? u : `${API_BASE}${u || ""}`);
 
+  const nbModules =
+    doc && doc.nbModules != null
+      ? doc.nbModules
+      : (doc?.programme || []).reduce((acc, y) => acc + ((y.items || []).length || 0), 0);
 
   return (
-      <div className="course-page">
-        {/* HEADER */}
-        <header className="header">
-          {/* Effets lumineux en arrière-plan */}
-          <div className="header-bg">
-            <div className="circle circle1"></div>
-            <div className="circle circle2"></div>
+    <div className="course-page">
+      {/* ===== HERO ===== */}
+      <header className="hero">
+        <div className="container">
+          {doc?.formation?.title && <span className="eyebrow">{doc.formation.title}</span>}
+          <h1 className="title">{doc?.title || "Chargement…"}</h1>
+          {!!doc?.subtitle && <p className="subtitle">{doc.subtitle}</p>}
+
+          <div className="actions">
+            <a href="#programme" className="btn btn-primary">
+              Découvrir le programme <FaArrowRight className="btn-ic" />
+            </a>
+            {doc?.brochure?.url && (
+              <a
+                href={resolveUrl(doc.brochure.url)}
+                target="_blank"
+                rel="noreferrer"
+                className="btn btn-ghost"
+              >
+                Brochure PDF
+              </a>
+            )}
           </div>
 
-          <div className="header-inner">
-            <h1 className="title animate-fade">{doc?.title || "Chargement…"}</h1>
-            <p className="subtitle animate-fade">{doc?.subtitle}</p>
-
-            <div className="header-cards">
-              {doc && (
-                  <>
-                    {doc.formation?.title && (
-                        <div className="header-card">
-                          <FaBullseye className="card-icon big-icon" />
-                          <div className="card-value">{doc.formation.title}</div>
-                          <div className="card-label">Formation</div>
-                        </div>
-                    )}
-                    {doc.durationYears && (
-                        <div className="header-card">
-                          <FaClock className="card-icon big-icon" />
-                          <div className="card-value">{doc.durationYears} ans</div>
-                          <div className="card-label">Durée</div>
-                        </div>
-                    )}
-                    {doc.semesters && (
-                        <div className="header-card">
-                          <FaLayerGroup className="card-icon big-icon" />
-                          <div className="card-value">{doc.semesters}</div>
-                          <div className="card-label">Semestres</div>
-                        </div>
-                    )}
-                    {nbModules > 0 && (
-                        <div className="header-card">
-                          <FaBook className="card-icon big-icon" />
-                          <div className="card-value">{nbModules}</div>
-                          <div className="card-label">Modules</div>
-                        </div>
-                    )}
-
-                  </>
-              )}
-            </div>
+          {/* Stats */}
+          <div className="stats">
+            {doc?.formation?.title && (
+              <div className="stat">
+                <div className="ic"><FaGraduationCap /></div>
+                <div className="val">{doc.formation.title}</div>
+                <div className="lbl">Formation</div>
+              </div>
+            )}
+            {doc?.durationYears && (
+              <div className="stat">
+                <div className="ic"><FaClock /></div>
+                <div className="val">{doc.durationYears} ans</div>
+                <div className="lbl">Durée</div>
+              </div>
+            )}
+            {doc?.semesters && (
+              <div className="stat">
+                <div className="ic"><FaLayerGroup /></div>
+                <div className="val">{doc.semesters}</div>
+                <div className="lbl">Semestres</div>
+              </div>
+            )}
+            {nbModules > 0 && (
+              <div className="stat">
+                <div className="ic"><FaTh /></div>
+                <div className="val">{nbModules}</div>
+                <div className="lbl">Modules</div>
+              </div>
+            )}
           </div>
-        </header>
+        </div>
+      </header>
 
-        {/* MAIN CONTENT */}
-        <div className="main-layout">
-          <div className="content">
-            <div className="tabs">
-              {TABS.map((tab) => (
+      {/* ===== CONTENT WRAPPER ===== */}
+      <section className="shell">
+        <div className="container">
+          <div className="grid">
+            {/* Main */}
+            <div className="main">
+              {/* Tabs */}
+              <nav className="tabs">
+                {TABS.map((t) => (
                   <button
-                      key={tab.key}
-                      className={`tab-btn ${activeTab === tab.key ? "active" : ""}`}
-                      onClick={() => setActiveTab(tab.key)}
+                    key={t.key}
+                    type="button"
+                    className={`tab ${activeTab === t.key ? "active" : ""}`}
+                    onClick={() => setActiveTab(t.key)}
                   >
-                    <span className="tab-icon">{tab.icon}</span> {tab.label}
+                    {t.label}
                   </button>
-              ))}
+                ))}
+              </nav>
+
+              <div className="panel">
+                {/* Objectifs */}
+                {!loading && activeTab === "objectifs" && (
+                  <div className="cards-list">
+                    {(doc?.objectifs || []).map((o, i) => (
+                      <div key={i} className="mini-card">{o}</div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Débouchés */}
+                {!loading && activeTab === "debouches" && (
+                  <div className="cards-list">
+                    {(doc?.debouches || []).map((d, i) => (
+                      <div key={i} className="mini-card">{d}</div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Poursuites */}
+                {!loading && activeTab === "poursuites" && (
+                  <div className="cards-list">
+                    {(doc?.poursuites || []).map((p, i) => (
+                      <div key={i} className="mini-card">{p}</div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Programme */}
+                {!loading && activeTab === "programme" && (
+                  <div id="programme" className="prog">
+                    {(doc?.programme || []).map((year, i) => (
+                      <div key={i} className="prog-item">
+                        <h4 className="prog-year">{year.label}</h4>
+                        <ul className="prog-list">
+                          {(year.items || []).map((it, j) => <li key={j}>{it}</li>)}
+                        </ul>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
 
-            <div className="tab-content">
-              {/* Objectifs */}
-              {!loading && activeTab === "objectifs" && (
-                  <div className="cards-vertical">
-                    {doc.objectifs?.map((o, i) => (
-                        <div key={i} className="center-card">{o}</div>
-                    ))}
-                  </div>
-              )}
-
-
-              {/* Debouches */}
-              {!loading && activeTab === "debouches" && (
-                  <div className="cards-vertical">
-                    {doc.debouches?.map((d, i) => (
-                        <div key={i} className="center-card">{d}</div>
-                    ))}
-                  </div>
-              )}
-
-              {/* Poursuites */}
-              {!loading && activeTab === "poursuites" && (
-                  <div className="cards-vertical">
-                    {doc.poursuites?.map((p, i) => (
-                        <div key={i} className="center-card">{p}</div>
-                    ))}
-                  </div>
-              )}
-
-
-              {!loading && activeTab === "programme" && (
-                  <div className="cards-vertical">
-                    {doc.programme?.map((year, i) => (
-                        <div key={i} className="programme-item">
-                          <div className="programme-year">{year.label}</div>
-                          <div className="programme-details">
-                            <ul>
-                              {year.items?.map((item, j) => <li key={j}>{item}</li>)}
-                            </ul>
-                          </div>
-                        </div>
-                    ))}
-                  </div>
-              )}
-            </div>
-          </div>
-
-          {/* RIGHT SIDEBAR */}
-          <aside className="sidebar">
-            {/* Infos rapides */}
-            <div className="card friendly-card">
-              <h3>
-                <FaCheckCircle style={{ marginRight: "0.5rem" }} />
-                Infos rapides
-              </h3>
-              <ul>
-                {doc?.formation?.title && (
-                    <li>
-                      <span className="field-label">Formation:</span>
-                      <Link href={`/courses-list-4?formation=${doc.formation.slug || doc.formation._id}`}>
-                        <span className="field-value">{doc.formation.title}</span>
+            {/* Sidebar */}
+            <aside className="side">
+              <div className="card info-card">
+                <h3 className="card-title"><FaInfoCircle className="card-icon" /> Infos rapides</h3>
+                <ul className="kv">
+                  {doc?.formation?.title && (
+                    <li className="kv-item">
+                      <span className="kv-key">Formation:</span>
+                      <Link
+                        href={`/courses-list-4?formation=${doc.formation.slug || doc.formation._id}`}
+                        className="kv-value link"
+                      >
+                        {doc.formation.title}
                       </Link>
                     </li>
-                )}
-                {doc?.status && (
-                    <li>
-                      <span className="field-label">Statut:</span>
-                      <span className="field-value">{doc.status}</span>
+                  )}
+                  {doc?.status && (
+                    <li className="kv-item">
+                      <span className="kv-key">Statut:</span>
+                      <b className="kv-value">{doc.status}</b>
                     </li>
-                )}
-                {doc?.updatedAt && (
-                    <li>
-                      <span className="field-label">MAJ:</span>
-                      <span className="field-value">{new Date(doc.updatedAt).toLocaleDateString("fr-FR")}</span>
+                  )}
+                  {doc?.updatedAt && (
+                    <li className="kv-item">
+                      <span className="kv-key">M.A.J.:</span>
+                      <b className="kv-value">{new Date(doc.updatedAt).toLocaleDateString("fr-FR")}</b>
                     </li>
-                )}
-                {doc?.brochure?.url && (
-                    <li>
-                      <FaFilePdf style={{ marginRight: "0.3rem" }} />
-                      <a href={resolveUrl(doc.brochure.url)} target="_blank" rel="noreferrer">
+                  )}
+                  {doc?.brochure?.url && (
+                    <li className="kv-item">
+                      <a
+                        href={resolveUrl(doc.brochure.url)}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="kv-value link"
+                      >
                         Télécharger la brochure
                       </a>
                     </li>
-                )}
-              </ul>
-            </div>
+                  )}
+                </ul>
+              </div>
 
-            {/* Coordinateur */}
-            {doc?.coordinator && (
-                <div className="card friendly-card">
-                  <h3>
-                    <FaUser style={{ marginRight: "0.5rem" }} />
-                    Coordinateur
-                  </h3>
-                  <div className="field-row">
-                    <span className="field-label">Nom:</span>
-                    <span className="field-value">{doc.coordinator.name}</span>
-                    <span className="field-label">Métier:</span>
-                    <span className="field-value">{doc.coordinator.role}</span>
-                  </div>
-                  <div className="field-row">
-                    <span className="field-label">Email:</span>
-                    <span className="field-value">{doc.coordinator.email}</span>
-                    <span className="field-label">Téléphone:</span>
-                    <span className="field-value">{doc.coordinator.phone}</span>
-                  </div>
-                  <div className="field-row">
-                    <span className="field-label">Bureau:</span>
-                    <span className="field-value">{doc.coordinator.office}</span>
-                  </div>
+              {doc?.coordinator && (
+                <div className="card coord-card">
+                  <h3 className="card-title"><FaUser className="card-icon" /> Coordinateur</h3>
+                  <ul className="kv">
+                    <li className="kv-item">
+                      <span className="kv-key">Nom:</span>
+                      <b className="kv-value">{doc.coordinator.name}</b>
+                    </li>
+                    <li className="kv-item">
+                      <span className="kv-key">Métier:</span>
+                      <b className="kv-value">{doc.coordinator.role}</b>
+                    </li>
+                    <li className="kv-item">
+                      <span className="kv-key">Email:</span>
+                      <b className="kv-value">{doc.coordinator.email}</b>
+                    </li>
+                    <li className="kv-item">
+                      <span className="kv-key">Téléphone:</span>
+                      <b className="kv-value">{doc.coordinator.phone}</b>
+                    </li>
+                    <li className="kv-item">
+                      <span className="kv-key">Bureau:</span>
+                      <b className="kv-value">{doc.coordinator.office}</b>
+                    </li>
+                  </ul>
                 </div>
-            )}
+              )}
 
-            {/* Documents */}
-            {doc?.documents?.length > 0 && (
-                <div className="card friendly-card">
-                  <h3>
-                    <FaFilePdf style={{ marginRight: "0.5rem" }} />
-                    Documents
-                  </h3>
-                  <ul>
-                    {doc.documents.map((d, i) => (
-                        <li key={i}>
-                          <a href={resolveUrl(d.url)} target="_blank" rel="noreferrer">
-                            {d.label} ({d.type || "PDF"})
-                          </a>
-                        </li>
+              {!!(doc?.documents && doc.documents.length) && (
+                <div className="card docs-card">
+                  <h3 className="card-title"><FaFilePdf className="card-icon" /> Documents</h3>
+                  <ul className="docs-list">
+                    {(doc.documents || []).map((d, i) => (
+                      <li key={i} className="docs-item">
+                        <a href={resolveUrl(d.url)} target="_blank" rel="noreferrer" className="link">
+                          {d.label} [{d.type || "PDF"}]
+                        </a>
+                      </li>
                     ))}
                   </ul>
                 </div>
-            )}
-          </aside>
+              )}
+            </aside>
+          </div>
         </div>
+      </section>
 
-        <style jsx>{`
-          /* HEADER */
-          .header {
-            position: relative;
-            background: linear-gradient(135deg, #16213E, #1a1a80, #0001ff);
-            color: #fff;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 3rem 2rem;
-            border-radius: 0 0 40px 40px;
-            overflow: hidden;
-          }
+      {/* ===== STYLES ===== */}
+      <style jsx>{`
+        .course-page {
+          --accent: #2177CE;
+          --shadow-sm: 0 2px 8px rgba(0,0,0,0.06);
+          --border: #e9edf3;
+          background: #ffffff;
+          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+          color: #000;
+          line-height: 1.5;
+        }
 
-          /* Effets lumineux animés */
-          .header-bg .circle {
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(120px);
-            opacity: 0.6;
-            animation: float 10s infinite ease-in-out alternate;
-          }
+        /* Wider container, small side gutters */
+        .container {
+          --container-w: 1400px;
+          width: min(var(--container-w), 100%);
+          margin: 0 auto;
+          padding: 0 16px;
+        }
+        @media (min-width: 1600px) {
+          .container { --container-w: 1440px; }
+        }
 
-          .circle1 {
-            width: 400px;
-            height: 400px;
-            top: -100px;
-            left: -100px;
-            background: #4f46e5;
-          }
+        /* HERO */
+        .hero {
+          padding: 170px 0 24px; /* below fixed header */
+          background: linear-gradient(to bottom, #f8f9fa 0%, #ffffff 100%);
+        }
+        .eyebrow {
+          font-size: 14px; font-weight: 600; color: #6b7280; margin-bottom: 10px; display: block;
+        }
+        .title { font-size: 36px; font-weight: 700; margin-bottom: 10px; }
+        .subtitle { font-size: 18px; color: #6b7280; margin-bottom: 28px; }
 
-          .circle2 {
-            width: 500px;
-            height: 500px;
-            bottom: -150px;
-            right: -100px;
-            background: #3b82f6;
-          }
+        .actions { display: flex; gap: 12px; margin-bottom: 28px; }
+        .btn {
+          padding: 12px 18px; border-radius: 8px; font-weight: 700; text-decoration: none;
+          display: inline-flex; align-items: center; gap: 8px; transition: transform .15s ease, box-shadow .15s ease, background .15s ease;
+          border: 1px solid transparent;
+        }
+        .btn-primary {
+          background: var(--accent); color: #fff !important; box-shadow: var(--shadow-sm);
+        }
+        .btn-primary:hover { transform: translateY(-1px); }
+        .btn-primary * { color: #fff !important; }
+        .btn-ghost { background: #fff; color: #0f172a; border-color: #dfe3ea; box-shadow: var(--shadow-sm); }
+        .btn-ghost:hover { background: #f6f8fb; transform: translateY(-1px); }
+        .btn-ic { font-size: 16px; color: inherit; }
 
-          @keyframes float {
-            from {
-              transform: translateY(0px);
-            }
-            to {
-              transform: translateY(-40px);
-            }
-          }
+        /* Header stat cards */
+        .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
+        .stat {
+          background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 18px 20px; text-align: center;
+          box-shadow: var(--shadow-sm); transition: transform .15s ease, border-color .15s ease, background .15s ease;
+        }
+        .stat:hover { transform: translateY(-2px); border-color: #d7e7fb; background: #fff; }
+        .ic {
+          width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+          margin: 0 auto 10px; font-size: 20px; color: var(--accent); background: #EAF3FE;
+          border: 1px solid #e7eef8;
+        }
+        .val { font-size: 18px; font-weight: 800; color: #0f172a; }
+        .lbl { font-size: 14px; color: #6b7280; }
+        @media (max-width: 768px) { .stats { grid-template-columns: repeat(2, 1fr); } }
 
-          /* Titre + sous-titre */
-          .title {
-            padding-top: 3rem;
-            font-size: 4rem;
-            font-weight: 900;
-            margin-bottom: 1rem;
-            background: linear-gradient(90deg, #ff7e5f, #feb47b, #d52d5a, #8e0202);
-            background-size: 100% 300%;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            animation: gradientMove 6s ease infinite;
-            text-shadow: none; /* tu peux laisser si tu veux plus de glow */
-          }
+        /* BODY */
+        .shell { padding: 32px 0 40px; }
+        .grid { display: grid; grid-template-columns: 2fr 1fr; gap: 32px; }
+        @media (max-width: 992px) { .grid { grid-template-columns: 1fr; } }
 
-          @keyframes gradientMove {
-            0% {
-              background-position: 0% 50%;
-            }
-            50% {
-              background-position: 100% 50%;
-            }
-            100% {
-              background-position: 0% 50%;
-            }
-          }
+        /* Tabs */
+        .tabs { display: flex; border-bottom: 1px solid #e5e7eb; margin-bottom: 18px; gap: 8px; flex-wrap: wrap; }
+        .tab {
+          background: none; border: none; padding: 10px 14px; font-weight: 700; color: #6b7280; cursor: pointer; position: relative; border-radius: 8px;
+        }
+        .tab:hover { color: var(--accent); background: #f5f9ff; }
+        .tab.active { color: var(--accent); }
+        .tab.active::after {
+          content: ""; position: absolute; bottom: -1px; left: 10px; right: 10px; height: 3px; background: var(--accent); border-radius: 3px;
+        }
 
+        /* Lists as mini-cards */
+        .cards-list { display: grid; gap: 10px; }
+        .mini-card {
+          background: #fff; border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px;
+          box-shadow: var(--shadow-sm); font-weight: 600; color: #0f172a;
+        }
 
-          .subtitle {
-            font-size: 1.5rem;
-            margin-bottom: 3rem;
-            opacity: 0.9;
-          }
+        /* Programme */
+        .prog { display: grid; gap: 14px; }
+        .prog-item {
+          background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 16px;
+          box-shadow: var(--shadow-sm);
+        }
+        .prog-year { font-size: 18px; font-weight: 800; color: #0f172a; margin: 0 0 8px; }
+        .prog-list { list-style: none; padding: 0; margin: 0; }
+        .prog-list li { margin-bottom: 8px; padding-left: 18px; position: relative; }
+        .prog-list li::before { content: "•"; color: var(--accent); position: absolute; left: 0; top: 0; }
 
-          /* Animation d’apparition */
-          .animate-fade {
-            animation: fadeInUp 1s ease both;
-          }
+        /* Sidebar cards */
+        .side { display: flex; flex-direction: column; gap: 16px; }
+        .card {
+          background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 16px 18px;
+          box-shadow: var(--shadow-sm);
+        }
+        .card-title { font-size: 16px; font-weight: 800; margin: 0 0 10px; display: flex; align-items: center; gap: 8px; color: #0f172a; }
+        .card-icon { color: var(--accent); font-size: 18px; }
 
-          @keyframes fadeInUp {
-            from {
-              opacity: 0;
-              transform: translateY(30px);
-            }
-            to {
-              opacity: 1;
-              transform: translateY(0);
-            }
-          }
+        .kv { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
+        .kv-item { display: grid; grid-template-columns: 1fr auto; gap: 12px; font-size: 14px; }
+        .kv-key { color: #6b7280; font-weight: 600; }
+        .kv-value { color: #0f172a; font-weight: 700; text-align: right; }
+        .link { color: #0f172a; text-decoration: none; }
+        .link:hover { text-decoration: underline; }
 
-          /* Cards en glassmorphism */
-          .header-cards {
-            display: flex;
-            justify-content: center;
-            gap: 2rem;
-            flex-wrap: wrap;
-          }
-
-          .header-card {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: #fff;
-            width: 180px;
-            height: 180px;
-            border-radius: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center; /* centre horizontalement */
-            justify-content: center; /* centre verticalement */
-            text-align: center; /* centre le texte multiline */
-            transition: transform 0.4s ease, box-shadow 0.4s ease;
-          }
-
-          .header-card:hover {
-            transform: translateY(-8px) scale(1.05);
-            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
-          }
-
-          .card-icon {
-            font-size: 2.5rem;
-            margin-bottom: 0.5rem;
-          }
-
-          .card-icon.big-icon {
-            font-size: 3rem;
-          }
-
-          .card-value {
-            font-size: 1.3rem;
-            font-weight: 700;
-          }
-
-          .card-label {
-            font-size: 1rem;
-            opacity: 0.85;
-          }
-
-
-          /* LAYOUT PRINCIPAL */
-          .main-layout {
-            display: flex;
-            gap: 2rem;
-            margin-top: 2rem;
-            padding: 2rem 3rem 3rem 3rem;
-          }
-
-          .content {
-            flex: 2;
-          }
-
-          .sidebar {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-          }
-
-          /* TABS */
-          .tabs {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 1rem;
-            flex-wrap: wrap;
-            justify-content: space-between;
-            width: 100%;
-          }
-
-          .tab-btn {
-            flex: 1;
-            padding: 1rem 0;
-            border-radius: 8px;
-            border: 1px solid #ddd;
-            background: #f5f5f5;
-            cursor: pointer;
-            font-weight: 700;
-            font-size: 1.1rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-          }
-
-          .tab-btn.active {
-            background: #0001ff;
-            color: white;
-            border-color: #266ff3;
-          }
-
-          .tab-icon {
-            display: flex;
-            align-items: center;
-          }
-
-          /* CARDS OBJECTIFS / DEBOUCHES / POURSUITES */
-          .cards-vertical {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-          }
-
-          .center-card {
-            background: #f5f8ff;
-            padding: 1rem 1.5rem;
-            border-radius: 12px;
-            border-left: 5px solid #266ff3;
-            text-align: center;
-            font-weight: 600;
-            font-size: 1rem;
-            color: #000157;
-            transition: transform 0.3s, box-shadow 0.3s;
-          }
-
-          .center-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-          }
-
-          /* CARDS PROGRAMME */
-          .programme-item {
-            display: flex;
-            gap: 2rem;
-            background: #f5f8ff;
-            padding: 1rem 1.5rem;
-            border-radius: 12px;
-            border-left: 5px solid #266ff3;
-            align-items: flex-start;
-            transition: transform 0.3s, box-shadow 0.3s;
-          }
-
-          .programme-item:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-          }
-
-          .programme-year {
-            flex: 0 0 120px;
-            font-weight: 700;
-            font-size: 1.1rem;
-            color: #000157;
-          }
-
-          .programme-details {
-            flex: 1;
-          }
-
-          .programme-details ul {
-            padding-left: 1rem;
-            margin: 0;
-          }
-
-          .programme-details li {
-            margin-bottom: 0.3rem;
-            font-size: 1rem;
-          }
-
-          /* SIDEBAR */
-          .friendly-card {
-            background: #f0f4ff;
-            padding: 1.5rem;
-            border-radius: 16px;
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s, box-shadow 0.3s;
-          }
-
-          .friendly-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-          }
-
-          .friendly-card h3 {
-            font-size: 1.2rem;
-            margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-          }
-
-          .field-row {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1rem 2rem;
-            margin-bottom: 0.5rem;
-          }
-
-          .field-label {
-            font-weight: 600;
-            color: #333;
-          }
-
-          .field-value {
-            font-weight: 500;
-            color: #555;
-          }
-
-          /* Sidebar liste classique */
-          .sidebar ul li {
-            display: flex;
-            justify-content: space-between;
-            padding: 0.3rem 0;
-            font-size: 0.95rem;
-          }
-        `}</style>
-      </div>
+        .docs-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
+        .docs-item { font-size: 14px; }
+      `}</style>
+    </div>
   );
 }
