@@ -10,13 +10,12 @@ export default function About() {
             <div className="row justify-center text-center">
               <div className="col-auto">
                 <div>
-                  <h1 className="page-header__title">About Us</h1>
+                  <h1 className="page-header__title">À propos de la FST Marrakech</h1>
                 </div>
 
                 <div>
                   <p className="page-header__text">
-                    We’re on a mission to deliver engaging, curated courses at a
-                    reasonable price.
+               Découvrez l'excellence académique et l'innovation scientifique qui font de notre faculté un pilier de l'enseignement supérieur au Maroc depuis 1994
                   </p>
                 </div>
               </div>
