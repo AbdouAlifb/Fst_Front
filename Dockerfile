@@ -1,26 +1,18 @@
-# ---------- build ----------
-FROM node:20-alpine AS build
+# front/Dockerfile
+FROM node:20-alpine
 WORKDIR /app
 
-# more robust installs
-RUN npm config set fetch-retries 5 \
- && npm config set fetch-retry-factor 2 \
- && npm config set fetch-retry-maxtimeout 300000 \
- && npm config set fetch-retry-mintimeout 20000
-
 COPY package*.json ./
-RUN npm ci
+# Use npm ci if you have a lockfile; fallback to npm i automatically
+RUN if [ -f package-lock.json ]; then npm ci; else npm i; fi
 
 COPY . .
-# produce static site into /app/out
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+
+# Build without static export
+# (Make sure next.config.js does NOT set: output: 'export')
 RUN npm run build
 
-# ---------- runtime ----------
-FROM nginx:alpine
-RUN rm -rf /usr/share/nginx/html/*
-
-# if next.config.js uses output:'export', build output is in /app/out
-COPY --from=build /app/out /usr/share/nginx/html
-
-EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
+EXPOSE 3000
+CMD ["npm", "start"]
