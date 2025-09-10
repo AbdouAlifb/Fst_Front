@@ -1,4 +1,3 @@
-'use client'
 import { Suspense } from 'react';
 import PageLinks from '@/components/common/PageLinks'
 import Preloader from '@/components/common/Preloader'
