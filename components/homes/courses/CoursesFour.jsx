@@ -42,9 +42,9 @@ export default function CoursesFour() {
         <div className="row justify-center text-center">
           <div className="col-auto">
             <div className="sectionTitle">
-              <h2 className="sectionTitle__title">Formations</h2>
+              <h2 className="sectionTitle__title"> Nos Formations</h2>
               <p className="sectionTitle__text">
-                Choisissez votre parcours à la FST Marrakech
+               Découvrez les différentes formations proposées par la FST Marrakech, conçues pour vous préparer aux défis scientifiques et technologiques actuels.
               </p>
             </div>
           </div>
@@ -92,14 +92,14 @@ export default function CoursesFour() {
           </button>
         </div>
 
-        <div className="row justify-center pt-60 lg:pt-50">
+        {/* <div className="row justify-center pt-60 lg:pt-50">
           <div className="col-auto">
             <Link href="/courses-list-4" className="button -icon -purple-1 text-white">
               Voir toutes les formations
               <i className="icon-arrow-top-right text-13 ml-10"></i>
             </Link>
           </div>
-        </div>
+        </div> */}
       </div>
 
       <style jsx>{`

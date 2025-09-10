@@ -12,10 +12,13 @@ import PageLinks from '@/components/common/PageLinks'
 import Preloader from '@/components/common/Preloader'
 import TestimonialsOne from '@/components/common/TestimonialsOne'
 import WhyCourse from '@/components/homes/WhyCourse'
+import FooterFour from '@/components/layout/footers/FooterFour'
 
 
 import FooterOne from '@/components/layout/footers/FooterOne'
 import Header from '@/components/layout/headers/Header'
+import HeaderFive from '@/components/layout/headers/HeaderFive'
+import HeaderFour from '@/components/layout/headers/HeaderFour'
 import React from 'react'
 
 export const metadata = {
@@ -30,7 +33,7 @@ export default function page() {
     <div className="main-content  ">
       <Preloader/>
 
-        <Header/>
+        <HeaderFour/>
         <div className="content-wrapper js-content-wrapper overflow-hidden">
             <PageLinks/>
             <About/>
@@ -44,7 +47,7 @@ export default function page() {
 
             
             
-            <FooterOne/>
+            <FooterFour/>
         </div>
 
     </div>

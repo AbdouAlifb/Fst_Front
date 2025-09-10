@@ -50,7 +50,8 @@ export default function HeroFour() {
             data-aos-delay="500"
           >
            <div className="masthead__content pl-32 lg:pl-0">
-              <h1 className="masthead__title">
+              <h1 className="masthead__title" style={{  paddingTop : "20px" 
+}}>
                 Choisissez votre parcours{" "}
                 <span className="nowrap">
                   à la <span className="text-purple-1">FST Marrakech</span>
@@ -110,9 +111,10 @@ export default function HeroFour() {
                 <Image
                   width={587}
                   height={656}
+                  style={{ borderRadius: "20px"  }}
                   data-move="20"
                   className="js-mouse-move"
-                  src="/assets/img/home-4/masthead/1.png"
+                  src="/assets/img/home-4/masthead/hero.jpg"
                   alt="image"
                 />
               </div>

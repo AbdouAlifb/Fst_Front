@@ -7,13 +7,15 @@ import PageLinks from '@/components/common/PageLinks'
 import Preloader from '@/components/common/Preloader'
 
 import EventsTwo from '@/components/events/EventsTwo'
+import FooterFour from '@/components/layout/footers/FooterFour'
 import FooterOne from '@/components/layout/footers/FooterOne'
 import Header from '@/components/layout/headers/Header'
+import HeaderFour from '@/components/layout/headers/HeaderFour'
 import React from 'react'
 export const metadata = {
-  title: 'Event-list-2 || Educrat - Professional LMS Online Education Course NextJS Template',
+  title: 'Actualités & Événements — FST Marrakech',
   description:
-    'Elevate your e-learning content with Educrat, the most impressive LMS template for online courses, education and LMS platforms.',
+    'Suivez les actualités, événements et annonces officielles de la Faculté des Sciences et Techniques de Marrakech : conférences, soutenances, recrutements, calendriers et plus.',
   
 }
 export default function page() {
@@ -21,11 +23,11 @@ export default function page() {
     <div className="main-content  ">
       <Preloader/>
 
-        <Header/>
+        <HeaderFour/>
         <div className="content-wrapper js-content-wrapper overflow-hidden">
-            <PageLinks/>
+    
             <EventsTwo/>
-            <FooterOne/>
+            <FooterFour/>
         </div>
 
     </div>

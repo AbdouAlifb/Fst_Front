@@ -3,6 +3,7 @@
 import PageLinks from '@/components/common/PageLinks'
 import Preloader from '@/components/common/Preloader'
 import CourseListFour from '@/components/courseList/CourseListFour'
+import FooterFour from '@/components/layout/footers/FooterFour'
 
 
 
@@ -24,9 +25,9 @@ export default function page() {
       <Preloader/>
         <HeaderFour/>
         <div className="content-wrapper  js-content-wrapper overflow-hidden">
-            <PageLinks/>
+            {/* <PageLinks/> */}
             <CourseListFour/>
-            <FooterOne/>
+            <FooterFour/>
         </div>
     </div>
   )

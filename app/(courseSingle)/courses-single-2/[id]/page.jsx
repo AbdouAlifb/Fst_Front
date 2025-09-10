@@ -8,6 +8,7 @@ import Preloader from '@/components/common/Preloader'
 
 import CourseDetailsTwo from '@/components/courseSingle/CourseDetailsTwo'
 import CourseSlider from '@/components/courseSingle/CourseSlider'
+import FooterFour from '@/components/layout/footers/FooterFour'
 import FooterOne from '@/components/layout/footers/FooterOne'
 
 import Header from '@/components/layout/headers/Header'
@@ -31,7 +32,7 @@ export default async function page(props) {
         <div  className="content-wrapper  js-content-wrapper ">
             <CourseDetailsTwo id={params.id} />
 
-            <FooterOne/>
+            <FooterFour/>
         </div>
 
 

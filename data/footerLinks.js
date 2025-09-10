@@ -2,12 +2,8 @@ export const footerLinks = [
   {
     title: "ABOUT",
     links: [
-      { href: "/about-1", label: "About Us" },
-      { href: "/blog-list-1", label: "Learner Stories" },
-      { href: "/instructor-become", label: "Careers" },
-      { href: "/blog-list-1", label: "Press" },
-      { href: "#", label: "Leadership" },
-      { href: "/contact-1", label: "Contact Us" },
+      { href: "/about-1", label: "À Propos" },
+      { href: "/", label: "Accueil" },
     ],
   },
   {

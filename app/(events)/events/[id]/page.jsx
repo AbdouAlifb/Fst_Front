@@ -8,6 +8,7 @@
 import PageLinks from '@/components/common/PageLinks'
 import Preloader from '@/components/common/Preloader'
 import EventDetails from '@/components/events/EventDetails'
+import FooterFour from '@/components/layout/footers/FooterFour'
 
 
 import FooterOne from '@/components/layout/footers/FooterOne'
@@ -32,7 +33,7 @@ export default async function page(props) {
 
             <EventDetails id={params.id} />
        
-            <FooterOne/>
+            <FooterFour/>
         </div>
 
     </div>

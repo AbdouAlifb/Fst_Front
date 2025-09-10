@@ -12,9 +12,9 @@ export default function FooterFour() {
   return (
     <footer className="footer -type-1 -dark bg-light-9">
       <div className="container">
-        <div className="footer-header border-bottom-dark">
-          <div className="row y-gap-20 justify-between items-center">
-            <div className="col-auto">
+        {/* <div className="footer-header border-bottom-dark">
+          <div className="row y-gap-20 justify-between items-center"> */}
+            {/* <div className="col-auto">
               <div className="footer-header__logo">
                 <Image
                   width={140}
@@ -23,8 +23,8 @@ export default function FooterFour() {
                   alt="logo"
                 />
               </div>
-            </div>
-            <div className="col-auto">
+            </div> */}
+            {/* <div className="col-auto">
               <div className="footer-header-socials">
                 <div className="footer-header-socials__title text-dark-1">
                   Follow us on social media
@@ -33,26 +33,38 @@ export default function FooterFour() {
                   <Socials />
                 </div>
               </div>
-            </div>
-          </div>
-        </div>
+            </div> */}
+          {/* </div>
+        </div> */}
 
         <div className="footer-columns">
           <div className="row y-gap-30">
+
             <FooterLinks allClasses="text-17 fw-500 uppercase mb-25" />
 
             <div className="col-xl-4 ol-md-4 col-sm-6">
-              <div className="text-17 fw-500 uppercase mb-25">GET IN TOUCH</div>
-              <div className="footer-columns-form">
-                <div>We don’t send spam so don’t worry.</div>
-                <form onSubmit={handleSubmit}>
-                  <div className="form-group">
-                    <input required type="text" placeholder="Email..." />
-                    <button type="submit">Submit</button>
-                  </div>
-                </form>
-              </div>
+              <div className="text-17 fw-500 uppercase mb-25">Contact</div>
+
+              <address className="footer-contact">
+                <p className="mb-10">
+                  Boulevard Abdelkrim Khattabi,<br />
+                  BP 549, 40000 Marrakech
+                </p>
+
+                <p className="mb-8">
+                  <span className="fw-600">Téléphone&nbsp;:</span>{" "}
+                  <a href="tel:+212524434649" className="link">+212 524 43 46 49</a>
+                </p>
+
+                <p className="mb-0">
+                  <span className="fw-600">Email&nbsp;:</span>{" "}
+                  <a href="mailto:contact@fstg-marrakech.ac.ma" className="link">
+                    contact@fstg-marrakech.ac.ma
+                  </a>
+                </p>
+              </address>
             </div>
+
           </div>
         </div>
 
@@ -60,11 +72,11 @@ export default function FooterFour() {
           <div className="row justify-between y-gap-20">
             <div className="col-md-6">
               <div className="footer-footer__copyright">
-                © {new Date().getFullYear()} Educrat. All Right Reserved.
+                © {new Date().getFullYear()} 2025 FST Marrakech. Tous droits réservés.
               </div>
             </div>
 
-            <div className="col-auto">
+            {/* <div className="col-auto">
               <div className="footer-footer__right">
                 <div className="footer-footer__list">
                   <Links />
@@ -79,7 +91,7 @@ export default function FooterFour() {
                   </a>
                 </div>
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>

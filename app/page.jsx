@@ -1,49 +1,56 @@
-// import HomeOne from "@/components/homes/home";
-import Header from "../components/layout/headers/Header";
-// import MobileMenu from "@/components/layout/component/MobileMenu";
 
-import HomeHero from "../components/homes/heros/HomeHero";
 
-import Brands from "../components/common/Brands";
-import Categories from "../components/homes/categories/Categories";
-import Courses from "../components/homes/courses/Courses";
-import TestimonialsOne from "../components/common/TestimonialsOne";
-import FeaturesOne from "../components/homes/features/FeaturesOne";
-import WhyCourse from "../components/homes/WhyCourse";
-import Instructors from "../components/common/Instructors";
-import GetApp from "../components/homes/getApp/GetApp";
-import Blog from "../components/homes/blogs/Blog";
-import Join from "../components/homes/join/Join";
-import FooterOne from "../components/layout/footers/FooterOne";
-import Preloader from "@/components/common/Preloader";
 
+
+
+import React from 'react'
+import HeaderFour from '@/components/layout/headers/HeaderFour'
+import HeroFour from '@/components/homes/heros/HeroFour'
+import Brands from '@/components/common/Brands'
+
+import CategoriesFour from '@/components/homes/categories/CategoriesFour'
+import CoursesFour from '@/components/homes/courses/CoursesFour'
+import LearningPath from '@/components/homes/LearningPath/LearningPath'
+import FeaturedCourses from '@/components/homes/courses/FeaturedCourses'
+import LandJob from '@/components/homes/landJob/LandJob'
+import TestimonialsFour from '@/components/homes/testimonials/TestimonialsFour'
+import AchievementsTwo from '@/components/homes/achievements/AchievementsTwo'
+import InstractorFour from '@/components/homes/instractors/InstractorFour'
+import EventsFour from '@/components/homes/events/EventsFour'
+import LearningSelection from '@/components/homes/LearningSelection'
+import FooterFour from '@/components/layout/footers/FooterFour'
+import Preloader from '@/components/common/Preloader'
 export const metadata = {
-  title:
-    "Home-1 || Educrat - Professional LMS Online Education Course NextJS Template",
+  title: 'Accueil — FST Marrakech',
   description:
-    "Elevate your e-learning content with Educrat, the most impressive LMS template for online courses, education and LMS platforms.",
+    'FST Marrakech : formations scientifiques et techniques, recherche innovante et vie étudiante dynamique. Découvrez nos départements et admissions.',
 };
 
-export default function HomePage() {
+
+export default function page() {
   return (
     <>
-      <Preloader />
-      <Header />
+    <div className='main-content'>
+    <Preloader/>
+        <HeaderFour/>
+    </div>
+     <div className="content-wrapper  js-content-wrapper overflow-hidden">
+        <HeroFour/>
+        <EventsFour/>
 
-      <div className="content-wrapper  js-content-wrapper overflow-hidden">
-        <HomeHero />
-        <Brands />
-        <Categories />
-        <Courses />
-        <TestimonialsOne />
-        <FeaturesOne />
-        <WhyCourse />
-        <Instructors />
-        <GetApp />
-        <Blog />
-        <Join />
-        <FooterOne />
-      </div>
-    </>
-  );
+        {/* <Brands/> */}
+        {/* <CategoriesFour/> */}
+        <CoursesFour/>
+        <LearningPath/>
+        {/* <FeaturedCourses/>
+        <LandJob/>
+        <TestimonialsFour/>
+        <AchievementsTwo/>
+        <InstractorFour/>
+        <LearningSelection/> */}
+        <FooterFour/>
+
+     </div>
+     </>
+  )
 }

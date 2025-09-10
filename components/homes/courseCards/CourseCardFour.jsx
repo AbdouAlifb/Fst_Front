@@ -48,9 +48,12 @@ export default function CourceCardFour({ data }) {
             </Link>
           </div>
 
-          {data.subtitle ? (
-            <p className="text-14 text-dark-1 mt-10">{data.subtitle}</p>
-          ) : null}
+      {data.subtitle ? (
+  <p className="text-14 text-dark-1 mt-10 clamped-2" title={data.subtitle}>
+    {data.subtitle}
+  </p>
+) : null}
+
 
           <div className="pt-15">
             <Link href={href} className="button -icon -purple-1 text-white">
@@ -59,6 +62,21 @@ export default function CourceCardFour({ data }) {
           </div>
         </div>
       </div>
+      <style jsx>{`
+  .clamped-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;          /* <-- clamp to 2 lines */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    line-height: 1.6;               /* keep rhythm consistent */
+    max-height: calc(1.6em * 2);    /* ensures equal card heights */
+    word-break: break-word;         /* prevents overflow on long tokens */
+  }
+`}</style>
+
     </div>
+    
   );
 }

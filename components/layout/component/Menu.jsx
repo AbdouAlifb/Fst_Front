@@ -1,16 +1,83 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect ,useMemo} from "react";
 import Link from "next/link";
 import MobileFooter from "./MobileFooter";
 import Image from "next/image";
 import { menuList } from "@/data/menu";
 import { usePathname } from "next/navigation";
+import { fetchFormations } from "@/services/formationService";
+const DEGREE_LABEL = {
+  licence: "Licence",
+  master: "Master",
+  "cycle-ingenieur": "Cycle Ingénieur",
+  doctorat: "Doctorat",
+  "tronc-commun": "Tronc commun",
+};
+
+const DEGREE_ORDER = ["tronc-commun", "licence", "master", "cycle-ingenieur", "doctorat"];
 
 export default function Menu({ allClasses, headerPosition }) {
   const [menuItem, setMenuItem] = useState("");
   const [submenu, setSubmenu] = useState("");
   const pathname = usePathname();
+    const [loading, setLoading] = useState(true);
+  const [formations, setFormations] = useState([]);
+ useEffect(() => {
+    let on = true;
+    (async () => {
+      try {
+        const { items } = await fetchFormations({
+          status: "published",
+          sort: "-order,-publishedAt",
+          limit: 100,
+        });
+        if (on) setFormations(items || []);
+      } catch (e) {
+        console.error("Failed to load formations:", e);
+        if (on) setFormations([]);
+      } finally {
+        if (on) setLoading(false);
+      }
+    })();
+    return () => {
+      on = false;
+    };
+  }, []);
+
+  // Highlight top menu by current path
+  useEffect(() => {
+    if (
+      pathname.startsWith("/formations") ||
+      pathname.startsWith("/courses-single-2")
+    ) {
+      setMenuItem("Formations");
+      setSubmenu("");
+    }
+  }, [pathname]);
+
+ const linkFor = (f) =>
+    `/courses-list-4?formation=${encodeURIComponent(f?.slug || f?._id || "")}`;
+
+// Flat, blog-style list ordering (degree order, then by 'order')
+  const sortedFormations = useMemo(() => {
+    const byDegree = {};
+    formations.forEach((f) => {
+      const k = f?.degreeLevel || "autres";
+      (byDegree[k] ||= []).push(f);
+    });
+    Object.keys(byDegree).forEach((k) => {
+      byDegree[k].sort((a, b) => (a?.order || 0) - (b?.order || 0));
+    });
+
+    const flat = [];
+    DEGREE_ORDER.forEach((k) => { if (byDegree[k]) flat.push(...byDegree[k]); });
+    Object.keys(byDegree)
+      .filter((k) => !DEGREE_ORDER.includes(k))
+      .forEach((k) => flat.push(...byDegree[k]));
+
+    return flat;
+  }, [formations]);
 
   useEffect(() => {
     menuList.forEach((elm) => {
@@ -52,10 +119,10 @@ export default function Menu({ allClasses, headerPosition }) {
             <li className="menu-item-has-children">
               <Link
                 data-barba
-               href="/home-4"
+               href="/"
                 className={menuItem == "Home" ? "activeMenu" : ""}
               >
-                Home 
+                Accueil 
               </Link>
 
               {/* <ul className="subnav">
@@ -77,44 +144,57 @@ export default function Menu({ allClasses, headerPosition }) {
                 ))}
               </ul> */}
             </li>
-       <li className="menu-item-has-children">
-  <Link
-    data-barba
-    href="#"
-    className={menuItem == "Formations" ? "activeMenu" : ""}
-  >
-    Formations <i className="icon-chevron-right text-13 ml-10"></i>
-  </Link>
+    <li className="menu-item-has-children">
+              <Link
+                data-barba
+                href="#"
+                className={menuItem === "Formations" ? "activeMenu" : ""}
+              >
+                Formations <i className="icon-chevron-right text-13 ml-10" />
+              </Link>
 
-  <ul className="subnav">
-    <li className="menu__backButton js-nav-list-back">
-      <Link href="#">
-        <i className="icon-chevron-left text-13 mr-10"></i> Formations
-      </Link>
-    </li>
+              <ul className="subnav">
+                <li className="menu__backButton js-nav-list-back">
+                  <Link href="#"><i className="icon-chevron-left text-13 mr-10" /> Formations</Link>
+                </li>
 
-    {menuList[1].links.map((elm, i) => {
-      const isActive =
-        pathname === elm.href || pathname.startsWith(elm.href + "/");
-      return (
-        <li key={i} className={isActive ? "activeMenu" : "inActiveMenu"}>
-          <Link data-barba href={elm.href}>{elm.label}</Link>
-        </li>
-      );
-    })}
-  </ul>
-</li>
+                {/* Skeletons while loading (same structure as blog) */}
+                {loading &&
+                  Array.from({ length: 8 }).map((_, i) => (
+                    <li key={i} className="inActiveMenu">
+                      <span className="sk-line" />
+                    </li>
+                  ))}
+
+                {/* All formations, flat list */}
+                {!loading &&
+                  sortedFormations.map((f) => {
+                    const href = linkFor(f);
+                    const isActive =
+                      pathname === href || pathname.startsWith(href + "/");
+                    return (
+                      <li key={f._id || f.slug} className={isActive ? "activeMenu" : "inActiveMenu"}>
+                        <Link data-barba href={href}>{f.title}</Link>
+                      </li>
+                    );
+                  })}
+
+                {!loading && sortedFormations.length === 0 && (
+                  <li className="inActiveMenu"><span>Aucune formation publiée.</span></li>
+                )}
+              </ul>
+            </li>
 
 
             <li className="menu-item-has-children">
               <Link
                 data-barba
-                href="#"
+                href="/event-list-2"
                 className={menuItem == "Events" ? "activeMenu" : ""}
               >
-                Actualiés  <i className="icon-chevron-right text-13 ml-10"></i>
+                Actualiés 
               </Link>
-              <ul className="subnav">
+              {/* <ul className="subnav">
                 <li className="menu__backButton js-nav-list-back">
                   <Link href="#">
                     <i className="icon-chevron-left text-13 mr-10"></i> Events
@@ -133,10 +213,10 @@ export default function Menu({ allClasses, headerPosition }) {
                     </Link>
                   </li>
                 ))}
-              </ul>
+              </ul> */}
             </li>
 
-            <li className="menu-item-has-children">
+            {/* <li className="menu-item-has-children">
               <Link
                 data-barba
                 href="#"
@@ -164,18 +244,19 @@ export default function Menu({ allClasses, headerPosition }) {
                   </li>
                 ))}
               </ul>
-            </li>
+            </li> */}
 
             <li className="menu-item-has-children">
               <Link
                 data-barba
-                href="#"
+                href="/about-1"
                 className={menuItem == "Pages" ? "activeMenu" : ""}
               >
-                Pages <i className="icon-chevron-right text-13 ml-10"></i>
+               À Propos
+                {/* <i className="icon-chevron-right text-13 ml-10"></i> */}
               </Link>
 
-              <ul className="subnav">
+              {/* <ul className="subnav">
                 <li className="menu__backButton js-nav-list-back">
                   <Link href="#">
                     <i className="icon-chevron-left text-13 mr-10"></i> Pages
@@ -291,10 +372,10 @@ export default function Menu({ allClasses, headerPosition }) {
                       </Link>
                     </li>
                   ))}
-              </ul>
+              </ul> */}
             </li>
 
-            <li
+            {/* <li
               
             >
               <Link data-barba href="/contact-1"  className={
@@ -302,7 +383,7 @@ export default function Menu({ allClasses, headerPosition }) {
               }>
                 Contact
               </Link>
-            </li>
+            </li> */}
           </ul>
         </div>
 
