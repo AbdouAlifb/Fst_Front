@@ -1,5 +1,5 @@
-
-
+'use client'
+import { Suspense } from 'react';
 import PageLinks from '@/components/common/PageLinks'
 import Preloader from '@/components/common/Preloader'
 import CourseListFour from '@/components/courseList/CourseListFour'
@@ -18,17 +18,21 @@ export const metadata = {
     'Elevate your e-learning content with Educrat, the most impressive LMS template for online courses, education and LMS platforms.',
   
 }
-
+export const dynamic = 'force-dynamic';
 export default function page() {
   return (
     <div className="main-content  ">
+           <Suspense fallback={null}>
+
       <Preloader/>
         <HeaderFour/>
         <div className="content-wrapper  js-content-wrapper overflow-hidden">
-            {/* <PageLinks/> */}
+              {/* <PageLinks/> */}
             <CourseListFour/>
             <FooterFour/>
         </div>
+            </Suspense>
+
     </div>
   )
 }
