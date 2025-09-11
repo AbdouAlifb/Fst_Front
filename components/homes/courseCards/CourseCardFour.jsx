@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { API_BASE_URL } from "../../../lib/config";
+import { API_BASE_URL } from "@/lib/config";
 
 const apiBase = API_BASE_URL;
 

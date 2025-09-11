@@ -12,7 +12,7 @@ import {
   FaTag,
 } from "react-icons/fa";
 import { fetchActualite } from "@/services/actualiteService";
-  import { API_BASE_URL } from "../../../lib/config";
+  import { API_BASE_URL } from "@/lib/config";
   
   const apiBase = API_BASE_URL;
 const TYPE_LABELS = {

@@ -7,7 +7,7 @@ import gsap from "gsap";
 import { FaClock, FaLayerGroup, FaGraduationCap, FaTag } from "react-icons/fa";
 import { fetchFormation } from "@/services/formationService";
 import { fetchFilieres } from "@/services/filiereService";
-import { API_BASE_URL } from "../../../lib/config";
+import { API_BASE_URL } from "@/lib/config";
 
 const apiBase = API_BASE_URL;
 const DEGREE_LABEL = {
