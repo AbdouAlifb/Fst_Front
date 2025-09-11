@@ -7,7 +7,9 @@ import gsap from "gsap";
 import { FaClock, FaLayerGroup, FaGraduationCap, FaTag } from "react-icons/fa";
 import { fetchFormation } from "@/services/formationService";
 import { fetchFilieres } from "@/services/filiereService";
+import { API_BASE_URL } from "../../../lib/config";
 
+const apiBase = API_BASE_URL;
 const DEGREE_LABEL = {
   licence: "Licence",
   master: "Master",
@@ -104,7 +106,7 @@ export default function CourseListFour() {
       formation?.bannerImage?.url ||
       formation?.cardImage?.url ||
       "/assets/img/home-4/masthead/1.png";
-    const base = process.env.NEXT_PUBLIC_API_BASE_URL || "";
+    const base = apiBase ;
     return u.startsWith("http") ? u : `${base}${u}`;
   };
 

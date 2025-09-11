@@ -2,8 +2,9 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { API_BASE_URL } from "../../../lib/config";
 
-const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || "";
+const apiBase = API_BASE_URL;
 
 export default function CourceCardFour({ data }) {
   const href = `/courses-list-4?formation=${encodeURIComponent(data.slug || data._id)}`;
@@ -11,6 +12,7 @@ export default function CourceCardFour({ data }) {
   const imgUrl = data?.cardImage?.url
     ? (data.cardImage.url.startsWith("http") ? data.cardImage.url : `${apiBase}${data.cardImage.url}`)
     : null;
+    console.log("image debug" , imgUrl , apiBase)
 
   // helpful per-card console
   console.debug("[CourseCardFour] render", {

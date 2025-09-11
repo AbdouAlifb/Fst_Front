@@ -4,11 +4,13 @@ import Image from "next/image";
 import Link from "next/link";
 import React, { useEffect, useMemo, useState } from "react";
 import { fetchActualites } from "@/services/actualiteService";
+import { API_BASE_URL } from "../../../lib/config";
 
+const apiBase = API_BASE_URL;
 /* ---------- utils ---------- */
 const resolveUrl = (u) => {
   if (!u) return "";
-  const base = process.env.NEXT_PUBLIC_API_BASE_URL || "";
+  const base = apiBase;
   return u.startsWith("http") ? u : `${base}${u}`;
 };
 const stripHtml = (s) => (s || "").replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim();

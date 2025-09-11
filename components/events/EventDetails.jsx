@@ -12,7 +12,9 @@ import {
   FaTag,
 } from "react-icons/fa";
 import { fetchActualite } from "@/services/actualiteService";
-
+  import { API_BASE_URL } from "../../../lib/config";
+  
+  const apiBase = API_BASE_URL;
 const TYPE_LABELS = {
   academique: "Événements académiques",
   administratif: "Annonces administratives",
@@ -22,7 +24,7 @@ const TYPE_LABELS = {
   autre: "Actualité",
 };
 
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || "";
+const API_BASE =apiBase;
 
 export default function EventDetails({ id }) {
   const [doc, setDoc] = useState(null);
