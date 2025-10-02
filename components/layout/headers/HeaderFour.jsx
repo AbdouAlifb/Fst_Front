@@ -6,12 +6,33 @@ import CartToggle from "../component/CartToggle";
 import { HeaderExplore } from "../component/header-explore";
 import Menu from "../component/Menu";
 import MobileMenu from "../component/MobileMenu";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import SearchToggle from "../component/SearchToggle";
+
+
 export default function HeaderFour() {
   const [activeMobileMenu, setActiveMobileMenu] = useState(false);
+
+  const [isScrolled, setIsScrolled] = useState(false);
+
+useEffect(() => {
+  const handleScroll = () => {
+    if (window.scrollY > 50) {
+      setIsScrolled(true);
+    } else {
+      setIsScrolled(false);
+    }
+  };
+
+  window.addEventListener("scroll", handleScroll);
+  return () => window.removeEventListener("scroll", handleScroll);
+}, []);
+
   return (
-    <header className="header -type-4 -shadow bg-white border-bottom-light js-header">
+    <div>
+    <header className={`header -type-4 js-header transition-all duration-300 ${
+  isScrolled ? 'bg-white -shadow border-bottom-light' : 'bg-transparent'
+}`} style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 1000 }}>
       <div className="header__container py-10">
         <div className="row justify-between items-center">
           <div className="col-auto">
@@ -80,5 +101,7 @@ export default function HeaderFour() {
         </div>
       </div>
     </header>
+     <div style={{ height: '80px' }}></div>
+     </div>
   );
 }

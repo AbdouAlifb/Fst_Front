@@ -5,6 +5,7 @@ import Link from "next/link";
 
 import React, { useEffect } from "react";
 import { useRouter } from "next/navigation";
+
 export default function HeroFour() {
   const router = useRouter();
   const handleSubmit = (e) => {
@@ -40,57 +41,88 @@ export default function HeroFour() {
 
     parallaxIt();
   }, []);
+  
   return (
-    <section className="masthead -type-3 bg-light-6 js-mouse-move-container">
-      <div className="container">
+<section className="masthead -type-3 js-mouse-move-container" style={{ position: "relative", overflow: "hidden", height: "120vh", marginTop: "-80px", paddingTop: "125px", display: "flex", alignItems: "center" }}>
+  <video
+  autoPlay
+  loop
+  muted
+  playsInline
+  style={{
+    position: "absolute",
+    top: 0,
+    left: 0,
+    width: "100%",
+    height: "100%",
+    objectFit: "cover",
+    objectPosition: "center",
+    minHeight: "100vh",
+    zIndex: 0
+  }}
+>
+        <source src="/assets/img/home-4/masthead/videoHero.mp4" type="video/mp4" />
+        Your browser does not support the video tag.
+      </video>
+      
+      {/* Optional dark overlay for better text readability */}
+      <div style={{
+        position: "absolute",
+        top: 0,
+        left: 0,
+        width: "100%",
+        height: "100%",
+        backgroundColor: "rgba(0, 0, 0, 0.4)",
+        zIndex: 1
+      }}></div>
+
+      <div className="container" style={{ position: "relative", zIndex: 2 }}>
         <div className="row y-gap-30 items-center justify-center">
           <div
             className="col-xl-7 col-lg-11 relative z-5"
             data-aos="fade-up"
             data-aos-delay="500"
           >
-           <div className="masthead__content pl-32 lg:pl-0">
-              <h1 className="masthead__title" style={{  paddingTop : "20px" 
-}}>
+            <div className="masthead__content pl-32 lg:pl-0">
+              <h1 className="masthead__title" style={{ paddingTop: "20px", color: "white" }}>
                 Choisissez votre parcours{" "}
                 <span className="nowrap">
                   à la <span className="text-purple-1">FST Marrakech</span>
                 </span>
               </h1>
 
-                <p className="masthead__text text-17 text-dark-1 mt-25">
-                  Formations en Licence, Master, Doctorat et Cycle ingénieur. Découvrez nos départements et le tronc commun.
-                </p>
+              <p className="masthead__text text-17 mt-25" style={{ color: "white" }}>
+                Formations en Licence, Master, Doctorat et Cycle ingénieur. Découvrez nos départements et le tronc commun.
+              </p>
 
-                <div className="masthead-search mt-30">
-                  <div className="masthead-search__form">
-                    <form onSubmit={handleSubmit}>
-                      <input
-                        required
-                        type="text"
-                        placeholder="Recherchez un département, une filière ou un diplôme…"
-                      />
+              <div className="masthead-search mt-30">
+                {/* <div className="masthead-search__form">
+                  <form onSubmit={handleSubmit}>
+                    <input
+                      required
+                      type="text"
+                      placeholder="Recherchez un département, une filière ou un diplôme…"
+                    />
 
-                      <button
-                        className="button -purple-1 text-white"
-                        onClick={() => router.push("/formations")}
-                      >
-                        <i className="icon icon-search"></i>
-                      </button>
-                    </form>
-                  </div>
-
-                  <div className="masthead-search__searches mt-40">
-                    Recherches populaires :
-                    <Link href="/formations/tronc-commun">Tronc commun</Link>,{" "}
-                    <Link href="/formations/licence">Licence</Link>,{" "}
-                    <Link href="/formations/master">Master</Link>,{" "}
-                    <Link href="/formations/doctorat">Doctorat</Link>,{" "}
-                    <Link href="/formations/cycle-ingenieur">Cycle ingénieur</Link>
-                  </div>
+                    <button
+                      className="button -purple-1 text-white"
+                      onClick={() => router.push("/formations")}
+                    >
+                      <i className="icon icon-search"></i>
+                    </button>
+                  </form>
                 </div>
-              </div>
 
+                <div className="masthead-search__searches mt-40">
+                  Recherches populaires :
+                  <Link href="/formations/tronc-commun">Tronc commun</Link>,{" "}
+                  <Link href="/formations/licence">Licence</Link>,{" "}
+                  <Link href="/formations/master">Master</Link>,{" "}
+                  <Link href="/formations/doctorat">Doctorat</Link>,{" "}
+                  <Link href="/formations/cycle-ingenieur">Cycle ingénieur</Link>
+                </div> */}
+              </div>
+            </div>
           </div>
 
           <div
@@ -98,26 +130,6 @@ export default function HeroFour() {
             data-aos="fade-up"
             data-aos-delay="750"
           >
-            <div className="masthead-image">
-              <div className="masthead-image__img1">
-                <div className="masthead-image__shape xl:d-none">
-                  <Image
-                    width={800}
-                    height={800}
-                    src="/assets/img/home-4/masthead/shape.svg"
-                    alt="image"
-                  />
-                </div>
-                <Image
-                  width={587}
-                  height={656}
-                  style={{ borderRadius: "20px"  }}
-                  data-move="20"
-                  className="js-mouse-move"
-                  src="/assets/img/home-4/masthead/hero.jpg"
-                  alt="image"
-                />
-              </div>
 
               {/* <div className="masthead-image__el1">
                 <div
@@ -167,7 +179,6 @@ export default function HeroFour() {
             </div>
           </div>
         </div>
-      </div>
     </section>
   );
 }
