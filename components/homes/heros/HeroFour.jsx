@@ -43,7 +43,7 @@ export default function HeroFour() {
   }, []);
   
   return (
-<section className="masthead -type-3 js-mouse-move-container" style={{ position: "relative", overflow: "hidden", height: "120vh", marginTop: "-80px", paddingTop: "125px", display: "flex", alignItems: "center" }}>
+<section className="masthead -type-3 js-mouse-move-container" style={{ position: "relative", overflow: "hidden", height: "115vh", marginTop: "-80px", paddingTop: "125px", display: "flex", alignItems: "center" }}>
 <video
   autoPlay
   loop

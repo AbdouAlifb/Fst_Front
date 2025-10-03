@@ -128,7 +128,31 @@ export default function EventsTwo() {
   return (
     <>
       {/* ===== HERO ===== */}
-      <section className="hero js-mouse-move-container">
+      <section className="hero js-mouse-move-container" style={{ height: "100vh"}}>
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          controls={false}
+          controlsList="nodownload nofullscreen noremoteplayback"
+          disablePictureInPicture
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+            objectPosition: "center",
+            minHeight: "100vh",
+            zIndex: 0,
+            pointerEvents: "none"
+          }}
+        >
+                <source src="/assets/img/home-4/masthead/videoEvents.mp4" type="video/mp4" />
+                Your browser does not support the video tag.
+              </video>
         <div className="dots" aria-hidden="true" />
         <div className="container">
           <div className="row">
@@ -143,7 +167,7 @@ export default function EventsTwo() {
                 FST Marrakech
               </h1>
 
-              <p className="heroSub">
+              <p className="heroSub" >
                 Découvrez les dernières nouvelles, événements et annonces importantes de la
                 Faculté des Sciences et Techniques de Marrakech.
               </p>
@@ -168,7 +192,7 @@ export default function EventsTwo() {
 
             {/* RIGHT */}
             <div className="col right">
-              <div className="mediaCard">
+              {/*<div className="mediaCard">
                 <Image
                   width={980}
                   height={560}
@@ -185,9 +209,9 @@ export default function EventsTwo() {
 
                 <div className="floatCard bottom">
                   <div className="floatTitle">👥 5000+ Étudiants</div>
-                  {/* <div className="floatSub">Communauté active</div>  */}
+                   <div className="floatSub">Communauté active</div>  
                 </div>
-              </div>
+              </div>*/}
             </div>
           </div>
 
@@ -402,10 +426,10 @@ export default function EventsTwo() {
 /* Title + subtitle tint toward #2177CE */
 .heroTitle,
 .masthead__title{
-  color: var(--accent) !important;       /* #2177CE */
+  color: white !important;       /* #2177CE */
 }
 .heroSub{
-  color: #1a64b0 !important;             /* slightly darker accent for contrast */
+  color: white !important;             /* slightly darker accent for contrast */
 }
 
         .btn-ghost{
