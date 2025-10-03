@@ -31,7 +31,7 @@ useEffect(() => {
   return (
     <div>
     <header className={`header -type-4 js-header transition-all duration-300 ${
-  isScrolled ? 'bg-white -shadow border-bottom-light' : 'bg-transparent'
+  isScrolled ? 'bg-white -shadow border-bottom-light' : 'bg-transparent '
 }`} style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 1000 }}>
       <div className="header__container py-10">
         <div className="row justify-between items-center">

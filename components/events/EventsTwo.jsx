@@ -128,7 +128,7 @@ export default function EventsTwo() {
   return (
     <>
       {/* ===== HERO ===== */}
-      <section className="hero js-mouse-move-container" style={{ height: "100vh"}}>
+      <section className="hero js-mouse-move-container">
         <video
           autoPlay
           loop
@@ -145,7 +145,7 @@ export default function EventsTwo() {
             height: "100%",
             objectFit: "cover",
             objectPosition: "center",
-            minHeight: "100vh",
+            minHeight: "110vh",
             zIndex: 0,
             pointerEvents: "none"
           }}
@@ -215,6 +215,9 @@ export default function EventsTwo() {
             </div>
           </div>
 
+        </div>
+      </section>
+      
           {/* Filters (compact pills) */}
           <div id="filters" className="filterRow">
             <span className="filterLabel">Filtrer par:</span>
@@ -240,9 +243,6 @@ export default function EventsTwo() {
               {!loading && filtered.length > 1 ? "s" : ""}
             </span>
           </div>
-        </div>
-      </section>
-
       {/* ===== LIST ===== */}
       <section id="list" className="listSection">
         <div className="container">
@@ -462,7 +462,7 @@ export default function EventsTwo() {
         /* Filter pill row */
         #filters{ scroll-margin-top: calc(var(--nav-height, 88px) + 12px); }
         .filterRow{
-          margin-top: 18px;
+          margin: 10px 20px;
           display:flex; align-items:center; gap: 10px;
           background:#fff; border:1px solid #e7eef8; border-radius: 14px;
           padding: 10px 12px; box-shadow: var(--shadow-sm);
