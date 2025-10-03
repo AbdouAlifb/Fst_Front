@@ -44,11 +44,14 @@ export default function HeroFour() {
   
   return (
 <section className="masthead -type-3 js-mouse-move-container" style={{ position: "relative", overflow: "hidden", height: "120vh", marginTop: "-80px", paddingTop: "125px", display: "flex", alignItems: "center" }}>
-  <video
+<video
   autoPlay
   loop
   muted
   playsInline
+  controls={false}
+  controlsList="nodownload nofullscreen noremoteplayback"
+  disablePictureInPicture
   style={{
     position: "absolute",
     top: 0,
@@ -58,7 +61,8 @@ export default function HeroFour() {
     objectFit: "cover",
     objectPosition: "center",
     minHeight: "100vh",
-    zIndex: 0
+    zIndex: 0,
+    pointerEvents: "none"
   }}
 >
         <source src="/assets/img/home-4/masthead/videoHero.mp4" type="video/mp4" />

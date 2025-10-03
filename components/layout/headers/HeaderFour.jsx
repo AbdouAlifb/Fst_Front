@@ -101,7 +101,6 @@ useEffect(() => {
         </div>
       </div>
     </header>
-     <div style={{ height: '80px' }}></div>
      </div>
   );
 }
